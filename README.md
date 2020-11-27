@@ -1,2 +1,2 @@
 # cribbage
-Cribbage Game
+Let's Play!
