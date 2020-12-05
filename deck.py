@@ -4,18 +4,18 @@ from __future__ import print_function
 
 import random
 
-"""A simple deck of playing cards.
+"""deck Module: A simple deck of playing cards.
 
 Card() maintains multiple string and integer properties for easy comparisons.
 Deck() maintains a list of playing cards that can be shuffled, dealt and cut. 
 
     Typical Usage Example:
 
-    d = Deck()
-    d.shuffle() 
-    d.cut()
-    peeked_card = d.peek(index)
-    removed_card = d.deal_one()
+    d = Deck()                      #Constructor
+    d.shuffle()                     #In-place custom deck shuffling method
+    d.cut()                         #In-place spitting and reordering of deck
+    peeked_card = d.peek(index)     #Copies card at index, does not change deck
+    popped_card = d.deal_one()      #list pop
 
     for card in deck.deck: print(card.name)
     print(removed_card.suit)
@@ -45,15 +45,16 @@ class Card():
 class Deck():
     """Builds a standard 52-card deck of cards
 
-    Local Variables:
+    Private Variables:
         _ranks is a dictionary mapping rankname strings to integer rank values
         _suits is a list of strings indicating suits
         _values is a dictionary mapping rankname strings to special integer values
+        _deck is a temporary list used to build self.deck attribute
     
-    Attributes:
+    Public Attributes:
         self.deck: the list containing all playing cards
 
-    Methods:
+    Public Methods:
         deck.cut(pivot_index) swaps the lower and upper parts of a deck around a pivot
     """
 
@@ -71,12 +72,14 @@ class Deck():
         self.deck = _deck
 
     def cut(self,pivot):
-        _low_list = []
-        _hi_list = []
+        _low = []
+        _hi = []
         try:
-             _low_list = self.deck[0:pivot]
-             _hi_list = self.deck[pivot:len(self.deck)-1]
-             self.deck = _hi_list.extend(_low_list)
+            self.deck[pivot]    #only to trigger exception for index out of bounds errors
+            _low = self.deck[0:pivot]
+            _hi = self.deck[pivot:51]
+            _hi.extend(_low)
+            self.deck = _hi      
         except ValueError:
             print("ERROR: Index out of range")
 
@@ -88,46 +91,16 @@ class Deck():
         return card
         
     def shuffle(self):
-        print(len(self.deck))
-        self.cut(random.randint(0,len(self.deck)-1))
-        self.cut(random.randint(0,len(self.deck)-1))
-        self.cut(random.randint(0,len(self.deck)-1))
         random.shuffle(self.deck)
-        self.cut(random.randint(0,len(self.deck)-1))
-        self.cut(random.randint(0,len(self.deck)-1))
-        self.cut(random.randint(0,len(self.deck)-1))
+        for i in range(int(len(self.deck)/2)):
+            self.cut(random.randint(0,len(self.deck)-1))
+        random.shuffle(self.deck)
+        for i in range(int(len(self.deck)/2)):
+            self.cut(random.randint(0,len(self.deck)-1))
         random.shuffle(self.deck)
 
     def deal_one(self):
-        return self.deck.pop()
-
-
-
-def test_deck_constructor():        #Test1 52-card Deck constructor validation
-    print("---------  TEST Deck Constructor -------------\n")
-    deck = Deck()
-    print(f'- Length of deck is: {len(deck.deck)}\n')
-    for card in deck.deck:
-        print(f'- {card.name}')
-
-def test_deck_shuffle():            #test deck.shuffle() method, dependency on deck.cut() method
-    print("---------  TEST Deck Shuffle -------------")
-    deck = Deck()                   #expected output should appear sufficiently randomized, with minimal clustering
-    deck.shuffle()
-    for card in deck.deck:
-        print(card.name)
-
-def test_card_properties():            #Test2 Card property validation
-    print("---------  TEST Card Properties -------------")
-    deck = Deck()                      #expected face card values = 10, expected ranks 1-13
-    for card in deck.deck:
-        print(f'Card name: {str(card.name)},   Card value: {str(card.value)},   Card rank: {str(card.rank)}')
-
-
-
-if __name__ == "__main__":
-    """ This is executed when run from the command line """
-    #test_deck_constructor()
-    #test_card_properties()
-    test_deck_shuffle()
-
+        if self.deck:
+            return self.deck.pop()
+        else:
+            raise IndexError('ERROR: Deck is empty')
