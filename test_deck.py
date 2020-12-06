@@ -101,7 +101,6 @@ def test_deck_deal_one():
 
 
 if __name__ == "__main__":
-    """ This is executed when run from the command line """
     test_deck_constructor()
     test_card_properties()
     test_deck_peek()

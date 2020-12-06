@@ -4,6 +4,8 @@ from __future__ import print_function
 
 import random
 
+#TODO(Jon) Need to Deck.shuffle() method. Seems to be failing in an edge case
+
 """deck Module: A simple deck of playing cards.
 
 Card() maintains multiple string and integer properties for easy comparisons.
@@ -76,8 +78,8 @@ class Deck():
         _hi = []
         try:
             self.deck[pivot]    #only to trigger exception for index out of bounds errors
-            _low = self.deck[0:pivot]
-            _hi = self.deck[pivot:51]
+            _low = self.deck[:pivot]
+            _hi = self.deck[pivot:]
             _hi.extend(_low)
             self.deck = _hi      
         except ValueError:
