@@ -3,7 +3,7 @@ from itertools import combinations
 
 
 
-class hand():
+class Hand():
 
     def __init__(self,list_of_cards, is_crib=False, turncard=None):
         self.hand = list_of_cards
@@ -165,6 +165,7 @@ class hand():
                     points += 1
         return points
     
+
     def compute_score(self):
         points = 0
         points += self.points_from_fifteens()
@@ -173,6 +174,7 @@ class hand():
         points += self.points_from_runs()[0]
         points += self.points_from_knobs()
         return points
+
 
     def optimize_by_points(self):
         cards = self.hand.copy()
@@ -189,6 +191,7 @@ class hand():
                 best_hand = hand
         return best_hand
 
+
     def optimize_statistically(self):
         cards = self.hand.copy()
         hand_scores = {}
@@ -199,4 +202,63 @@ class hand():
         ordered_hand_id = sorted(hand_scores.items(), key=lambda x: x[1],reverse=True)
         best_hand = ordered_hand_id[0]
         return best_hand
+
+
+    def peg_selection_lead(self,turncard):
+        #Check if there is a pair. If so, lead one of the cards in the pair
+        for key,value in self.ranks.items():
+            if value > 1:
+                for card in self.hand:
+                    if card.rank == key:
+                        return card
+        #Otherwise, match the turncard 
+        for card in self.hand:
+            if card.rank == turncard.rank:
+                return card
+        #Otherwise, avoid playing fives
+        for card in self.hand:
+            if card.rank != 5:
+                return card
+        #If no other choices, select the first card
+        return self.hand[0]
+
+
+    def peg_selection(self,stack,count,turncard):
+        #route to lead-off method if count is zero
+        if count == 0:
+            return self.peg_selection_lead(turncard)
+        #check for three or four of a kind
+        if len(stack) > 2:
+            for key,value in self.ranks.items():
+                if value > 2:
+                    for card in self.hand:
+                        if card.rank == key and key + count <= 31:
+                            return card
+        #check for a run
+        hand_copy = self.hand.copy()
+        for card in self.hand:
+            self.hand = stack.copy()
+            self.hand.append(card)
+            return_tuple = self.points_from_runs()
+            if return_tuple[0]:
+                self.hand = hand_copy.copy()
+                return card
+        self.hand = hand_copy.copy
+        #check for a fifteen or 31
+        for card in self.hand:
+            if card.value + count == 15 or card.value + count == 31:
+                return card
+        #check for a single pair
+        for unplayed_card in self.hand:
+            for played_card in stack:
+                if unplayed_card.rank == played_card.rank and unplayed_card.rank + count <= 31:
+                    return unplayed_card
+        #finally, play first card under 31
+        for card in self.hand:
+            if card.rank + count < 31:
+                return card
+
+
+                        
+
 
