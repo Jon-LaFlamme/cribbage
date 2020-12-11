@@ -31,7 +31,7 @@ def test_deck_peek():
     print(f'---Peek deck at index 52: {deck.peek(52).name}.')
 
 
-#test4 Deck.cut() validation @param is an integer representing a valid index
+#test4 Deck.cut()
 def test_deck_cut():
 
     print("\n---------  TEST Deck Cut -------------\n")
@@ -82,12 +82,16 @@ def test_deck_shuffle():
     print("\n---------  TEST Deck Shuffle -------------\n")
     deck = d.Deck()                  
     print("\n---default deck order---\n")
+    i = 0
     for card in deck.deck:
-        print(card.name)
+        i += 1
+        print(f'{i}) {card.name}')
     print("\n---after shuffle---\n")
     deck.shuffle()
+    i = 0
     for card in deck.deck:
-        print(card.name)
+        i += 1
+        print(f'{i}) {card.name}')
 
 
 #test6 deck.deal_one() method
@@ -99,11 +103,20 @@ def test_deck_deal_one():
     #testing exception
     deck.deal_one()
 
+#print card IDs for deck
+def card_ids():
+    print("\n---------  Card Ids  -------------\n")
+    deck = d.Deck()
+    for card in deck.deck:
+        print(card.id)
+
 
 if __name__ == "__main__":
-    test_deck_constructor()
-    test_card_properties()
-    test_deck_peek()
-    test_deck_cut()
-    test_deck_shuffle()
-    test_deck_deal_one()
+    #test_deck_constructor()
+    #test_card_properties()
+    #test_deck_peek()
+    #test_deck_cut()
+    #test_deck_shuffle()
+    #test_deck_deal_one()
+    card_ids()
+

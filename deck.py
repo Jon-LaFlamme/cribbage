@@ -4,7 +4,7 @@ from __future__ import print_function
 
 import random
 
-#TODO(Jon) Need to Deck.shuffle() method. Seems to be failing in an edge case
+#TODO(Jon) Need to test Deck.cut() method. Seems to be failing in an edge case
 
 """deck Module: A simple deck of playing cards.
 
@@ -42,6 +42,7 @@ class Card():
         self.value = value
         self.rankname = rankname
         self.name = f"{rankname} of {suit}"
+        self.id = f'{rankname[:2]}{suit[0]}'
 
 
 class Deck():
@@ -63,7 +64,7 @@ class Deck():
     def __init__(self):
         _ranks = {'ace':1,'two':2,'three':3,'four':4,'five':5,'six':6,'seven':7,'eight':8,
             'nine':9,'ten':10,'jack':11,'queen':12,'king':13}
-        _suits = ['hearts','diamonds','spades','clubs']
+        _suits = ['clubs','diamonds','hearts','spades']
         _values = {'ace':1,'two':2,'three':3,'four':4,'five':5,'six':6,'seven':7,'eight':8,
             'nine':9,'ten':10,'jack':10,'queen':10,'king':10}
         _deck = []

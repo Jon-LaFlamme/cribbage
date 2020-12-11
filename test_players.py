@@ -49,13 +49,13 @@ def test_discard_computer(difficulty):
     p = players.computer(difficulty)
     hand = []
     discards = []
-    for i in range(6):
+    for i in range(5):
         hand.append(d.deal_one())
     p.hand = hand
     print(f"\n---------  TEST discard() method computer -- {difficulty}  -------------\n")
     print('---hand before discards---')
     p.display_hand(False)
-    discards = p.discard()
+    discards = p.discard(1)
     print('---hand after discards---')
     p.display_hand(False)
     p.hand = discards
@@ -75,7 +75,7 @@ def test_discard_human():
     print(f"\n---------  TEST discard() method human -------------\n")
     print('---hand before discards---')
     p.display_hand(True)
-    discards = p.discard()
+    discards = p.discard(2)
     print('---hand after discards---')
     p.display_hand(False)
     p.hand = discards
@@ -115,18 +115,18 @@ def test_cut_deck():
         print(f'{i}) {card.name}')
 
 if __name__ == "__main__":
-    test_player()
-    test_human()
-    test_human('Jane Doe')
-    test_computer('easy')
-    test_computer('intermediate')
-    test_computer('difficult')
-    test_display_hand()
+    #test_player()
+    #test_human()
+    #test_human('Jane Doe')
+    #test_computer('easy')
+    #test_computer('intermediate')
+    #test_computer('difficult')
+    #test_display_hand()
     test_discard_computer('easy')
     test_discard_computer('intermediate')
     test_discard_computer('difficult')
-    test_discard_human()
-    test_cut_deck()
+    #test_discard_human()
+    #test_cut_deck()
 
 
     
