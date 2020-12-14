@@ -30,17 +30,19 @@ pegging_performance = {} #See template below
 # First map a value from 1-52 for each card in the deck. (eg {'acc':1,'acd':2,'ach':3,'acs':4,'twc':5, ....})
 
 def hand_id_mapper(values):
-    i = 1
+    count = 0
     id_ranks = {}
     for value in values.keys():
-        id_ranks[value[:2]]
+        for i in range(4):
+            count += 1
+            id_ranks[value[:2]] = count
     return id_ranks
     
 id_ranks = hand_id_mapper(values)
 
 #To compress posssibilities, 5 unique suit combinations are represented:
 # 4d = 4 different suits; 3d = 3 different suits; 3s = 3 same suit; 2s = 2 of each; 4s = 4 same suit
-def suit_signature(hand):
+def hand_suit_signature(hand):
     h = hand.Hand()
     composition = []
     for key,value in h.suits:  
@@ -63,11 +65,12 @@ def suit_signature(hand):
 # This function takes a hand as input and based on id_ranks, creates and returns a correcly oredered unique hand id as a string
 # This resolves the issue of redundant permutations of the same combination of cards in a hand
 def hand_id(hand):
+    signature = hand_suit_signature(hand)
     ids = {}
     for card in hand:
         ids[card.id] = id_ranks[card.id]
     ordered_hand_id = sorted(ids.items(), key=lambda x: x[1])
-    return f'{ordered_hand_id[0][0]}{ordered_hand_id[1][0]}{ordered_hand_id[2][0]}{ordered_hand_id[3][0]}'
+    return f'{ordered_hand_id[0][0]}{ordered_hand_id[1][0]}{ordered_hand_id[2][0]}{ordered_hand_id[3][0]}{signature}'
 
 #strategy is one of maximization of points and is blind to other bot's cards with zero statistical adjustments
 def peg_logic(hand_playing,stack,count,turncard):
@@ -184,22 +187,6 @@ def memorize_results(p1, p2, p1_peg, p2_peg, crib_pts, p1_is_dealer):
         performance_by_hand[h1]['nodeal_pos_peg'] += p1_peg
         performance_by_hand[h1]['hand_pts'] += p1.points - p1_peg
         performance_by_hand[h1]['neg_crib_pts'] -= crib_pts
-
-            
-    performance_by_hand = {}    #see template below
-#template: {"hand_id": 
-#               {"times_nodeal":int,
-#                "times_dealer":int,
-#                "dealer_neg_peg":-int,
-#                "nodeal_neg_peg":-int,
-#                "dealer_pos_peg":+int,
-#                "nodeal_pos_peg":+int,
-#                "hand_points":+int, 
-#                "neg_crib_pts":-int,
-#                "pos_crib_pts"+int}, 
-#           ... }
-#notes: averages for different stats can be computed at runtime based on the situation
-    pass
 
 
 def learning_by_rounds():

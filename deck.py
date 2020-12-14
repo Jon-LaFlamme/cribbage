@@ -42,7 +42,6 @@ class Card():
         self.value = value
         self.rankname = rankname
         self.name = f"{rankname} of {suit}"
-        self.id = f'{rankname[:2]}{suit[0]}'
 
 
 class Deck():

@@ -33,12 +33,12 @@ class Hand():
                 ranks[self.turncard.rank] = 1
             else:
                 ranks[self.turncard.rank] = ranks[self.turncard.rank] + 1
-        for key,value in ranks.items():
-            if value == 2:
+        for key in ranks.keys():
+            if ranks[key] == 2:
                 points += 2
-            elif value == 3:
+            elif ranks[key] == 3:
                 points += 6
-            elif value == 4:
+            elif ranks[key] == 4:
                 points += 12
         return points
 
@@ -62,8 +62,8 @@ class Hand():
         for denomination in collection:
             for combination in denomination:
                 tally = 0
-                for value in combination:
-                    tally += value
+                for card in combination:
+                    tally += card.value
                 if tally == 15:
                     points += 2
         return points
@@ -75,86 +75,84 @@ class Hand():
         if self.turncard:
             if self.turncard.suit in suits:
                 suits[self.turncard.suit] = suits[self.turncard.suit] + 1
-        for key,value in self.suits.items():
+        for key,value in suits.items():
             if value > 3:
-                points == value
+                points = value
         if self.is_crib and points < 5:
             points = 0       
         return points
 
 
-    def runs_helper_three(self,list_of_three):
-        default = (False,[])
-        if list_of_three[2] - list_of_three[1] == 1:
-            if list_of_three[1] - list_of_three[0] == 1:
-                return (True,list_of_three)  
-        return default      
-
-
-    def runs_helper_four(self,list_of_four):
-        default = (False,[])
-        if list_of_four[3] - list_of_four[2] == 1:
-            if list_of_four[2] - list_of_four[1] == 1:
-                if list_of_four[1] - list_of_four[0] == 1:
-                    return (True,list_of_four)
-        else:
-            return_tuple_lo = self.runs_helper_three(list_of_four[:3])
-            if return_tuple_lo[0]:
-                return return_tuple_lo
-            else:
-                return_tuple_hi = self.runs_helper_three(list_of_four[1:4])
-                if return_tuple_hi[0]:
-                    return return_tuple_hi 
-        return default      
-
-
-    def runs_helper_five(self,list_of_five): 
-        default = (False,[])
-        if list_of_five[4] - list_of_five[3] == 1:
-            if list_of_five[3] - list_of_five[2] == 1:
-                if list_of_five[2] - list_of_five[2] == 1:
-                    if list_of_five[2] - list_of_five[2] == 1:
-                        return (True,list_of_five)
-        else:
-            return_tuple_lo = self.runs_helper_four(list_of_five[:4])
-            if return_tuple_lo[0]:
-                return return_tuple_lo
-            else:
-                return_tuple_hi = self.runs_helper_four(list_of_five[1:5])
-                if return_tuple_hi[0]:
-                    return return_tuple_hi 
-        return default
-
-    #TODO(Jon) Optional, Convert this into a recursive algorithm or functional programming if feasible
     def points_from_runs(self):
-        points = 0
-        ranks = self.ranks.copy()
-        return_tuple = (False,[])
-        #Supports point calculation for computer discard and show sequences 
-        if self.turncard:
-            if self.turncard.rank not in ranks:
-                ranks[self.turncard.rank] = 1
+        is_run = False
+        #Early exit condition if fewer than 3 unique ranks
+        if len(self.ranks) < 3:
+            return 0
+        rank_list = []
+        for key in self.ranks.keys():
+            rank_list.append(key)
+        rank_list.sort()
+
+        #Create hash tables and keys to quickly identify run sequences in hand
+        three = {'1-2-3','2-3-4','3-4-5','4-5-6','5-6-7','6-7-8','7-8-9','8-9-10','9-10-11','10-11-12','11-12-13'}
+        four = {'1-2-3-4','2-3-4-5','3-4-5-6','4-5-6-7','5-6-7-8','6-7-8-9','7-8-9-10','8-9-10-11','9-10-11-12','10-11-12-13'}
+        five = {'1-2-3-4-5','2-3-4-5-6','3-4-5-6-7','4-5-6-7-8','5-6-7-8-9','6-7-8-9-10','7-8-9-10-11','8-9-10-11-12','9-10-11-12-13'}
+        if len(rank_list) == 5:
+            hash_5 = f'{rank_list[0]}-{rank_list[1]}-{rank_list[2]}-{rank_list[3]}-{rank_list[4]}'
+            hash_4_hi = f'{rank_list[1]}-{rank_list[2]}-{rank_list[3]}-{rank_list[4]}'
+            hash_3_hi = f'{rank_list[2]}-{rank_list[3]}-{rank_list[4]}'
+        if len(rank_list) >= 4:
+            hash_4_lo = f'{rank_list[0]}-{rank_list[1]}-{rank_list[2]}-{rank_list[3]}'     
+            hash_3_mi = f'{rank_list[1]}-{rank_list[2]}-{rank_list[3]}' 
+        if len(rank_list) >= 3:
+            hash_3_lo = f'{rank_list[0]}-{rank_list[1]}-{rank_list[2]}'
+
+        #Peform lookups and store the keys that get hits inside 'run' variable
+        run = []
+        if len(rank_list) >= 5:
+            if hash_5 in five:
+                return 5
+            elif hash_4_hi in four:
+                run = rank_list[1:]
+                is_run = True
+            elif hash_3_hi in three:
+                run = rank_list[2:]
+                is_run = True
+        if len(rank_list) >= 4 and not is_run:
+            if hash_4_lo in four:
+                run = rank_list[:4]
+                is_run = True
+            elif hash_3_mi in three:
+                run = rank_list[1:4]
+                is_run = True
+            elif hash_3_lo in three:
+                run = rank_list[:3]
+                is_run = True
+        elif not is_run and hash_3_lo in three:
+            run = rank_list[:3]
+            is_run = True
+        if not is_run:
+            return 0
+
+        #Determine if single, double, double-double, triple runs exist
+        if len(run) == 4:
+            for rank in run:
+                if self.ranks[rank] == 2:
+                    return 8
+            return 4
+        if len(run) == 3:
+            num_pairs = 0
+            for rank in run:
+                if self.ranks[rank] == 3:
+                    return 9
+                elif self.ranks[rank] == 2:
+                    num_pairs += 1
+            if num_pairs == 2:
+                return 12
+            elif num_pairs == 1:
+                return 6
             else:
-                ranks[self.turncard.rank] = ranks[self.turncard.rank] + 1
-        #If not enough unique ranks in hand, runs calculation can be skipped
-        if len(ranks) > 2:
-            ranks_as_list = []
-            sorted(ranks)
-            for key,value in ranks.items():
-                ranks_as_list.append(key)
-            #Runs helpers check for runs of 5,4 or 3 separately
-            if len(ranks_as_list) == 3:
-                return_tuple = self.runs_helper_three(ranks_as_list)
-            elif len(ranks_as_list) == 4:
-                return_tuple = self.runs_helper_four(ranks_as_list)
-            else:
-                return_tuple = self.runs_helper_five(ranks_as_list)
-        #Score calculated from 
-        if return_tuple[0]:
-            for number in return_tuple[1]:
-                points += ranks[number]
-                return (points, ranks)
-        return (points,{})
+                return 3
 
 
     def points_from_knobs(self):
@@ -171,7 +169,7 @@ class Hand():
         points += self.points_from_fifteens()
         points += self.points_from_flush()
         points += self.points_from_pairs()
-        points += self.points_from_runs()[0]
+        points += self.points_from_runs()
         points += self.points_from_knobs()
         return points
 
@@ -185,7 +183,7 @@ class Hand():
             score += self.points_from_fifteens()
             score += self.points_from_flush()
             score += self.points_from_pairs()
-            score += self.points_from_runs()[0]
+            score += self.points_from_runs()
             if score > max_score:
                 max_score = score
                 best_hand = hand

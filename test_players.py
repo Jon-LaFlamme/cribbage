@@ -122,9 +122,9 @@ if __name__ == "__main__":
     #test_computer('intermediate')
     #test_computer('difficult')
     #test_display_hand()
-    test_discard_computer('easy')
-    test_discard_computer('intermediate')
-    test_discard_computer('difficult')
+    #test_discard_computer('easy')
+    #test_discard_computer('intermediate')
+    #test_discard_computer('difficult')
     #test_discard_human()
     #test_cut_deck()
 

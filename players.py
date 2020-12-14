@@ -85,7 +85,7 @@ class human(player):
         if name:
             self.name = name
 
-        def user_discard(self,num_discards):
+    def user_discard(self,num_discards):
         discards = []
         indices= []
         while len(discards) < num_discards:     #supports 2 and 3-4 player discard rules with num_discards parameter
