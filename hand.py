@@ -85,11 +85,17 @@ class Hand():
 
     def points_from_runs(self):
         is_run = False
+        ranks = self.ranks.copy()
+        if self.turncard:
+            if self.turncard.rank in ranks:
+                ranks[self.turncard.rank] = ranks[self.turncard.rank] + 1 
+            else:
+                ranks[self.turncard.rank] = 1
         #Early exit condition if fewer than 3 unique ranks
-        if len(self.ranks) < 3:
+        if len(ranks) < 3:
             return 0
         rank_list = []
-        for key in self.ranks.keys():
+        for key in ranks.keys():
             rank_list.append(key)
         rank_list.sort()
 
@@ -109,7 +115,7 @@ class Hand():
 
         #Peform lookups and store the keys that get hits inside 'run' variable
         run = []
-        if len(rank_list) >= 5:
+        if len(rank_list) == 5:
             if hash_5 in five:
                 return 5
             elif hash_4_hi in four:
@@ -137,15 +143,15 @@ class Hand():
         #Determine if single, double, double-double, triple runs exist
         if len(run) == 4:
             for rank in run:
-                if self.ranks[rank] == 2:
+                if ranks[rank] == 2:
                     return 8
             return 4
         if len(run) == 3:
             num_pairs = 0
             for rank in run:
-                if self.ranks[rank] == 3:
+                if ranks[rank] == 3:
                     return 9
-                elif self.ranks[rank] == 2:
+                elif ranks[rank] == 2:
                     num_pairs += 1
             if num_pairs == 2:
                 return 12
@@ -179,14 +185,13 @@ class Hand():
         possible_hands = combinations(cards,4)
         best_hand = []
         max_score = 0
-        for hand in possible_hands:
-            score += self.points_from_fifteens()
-            score += self.points_from_flush()
-            score += self.points_from_pairs()
-            score += self.points_from_runs()
+        score = 0
+        for combo in possible_hands:
+            h = Hand(combo)
+            score = h.compute_score()
             if score > max_score:
                 max_score = score
-                best_hand = hand
+                best_hand = combo
         return best_hand
 
 
