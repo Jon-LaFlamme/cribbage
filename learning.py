@@ -3,11 +3,11 @@ import players
 import hand
 from itertools import combinations
 
+ranks = {'ace':1,'two':2,'three':3,'four':4,'five':5,'six':6,'seven':7,'eight':8,
+    'nine':9,'ten':10,'jack':11,'queen':12,'king':13}
 suits = ['clubs','diamonds','hearts','spades']
-values = {'ace':1,'two':2,'three':3,'four':4,'five':5,'six':6,'seven':7,'eight':8,
-            'nine':9,'ten':10,'jack':10,'queen':10,'king':10}
 
-performance_by_hand = {}    #see template below
+performance_by_hand = {}    
 #template: {"hand_id": 
 #               {"times_nodeal":int,
 #                "times_dealer":int,
@@ -19,43 +19,42 @@ performance_by_hand = {}    #see template below
 #                "neg_crib_pts":-int,
 #                "pos_crib_pts"+int}, 
 #           ... }
-#notes: averages for different stats can be computed at runtime based on the situation
+# size = only 9,100 unique hand possibilities if abstracting the suits in hand_suit_signature
 
-pegging_performance = {} #See template below
-# Store id as turncard_rank + played_cards_concatenated as rank_id_string
+pegging_performance = {} 
+# TODO(Jon) Store id as turncard_rank + played_cards_concatenated as rank_id_string
 #           Computer can loop through each card in hand to find matching ids and select best option
 #           Example: {"jacacetwothrfou": 3}
 #expected about 50,000 unique IDs after many iterations.
 
 # First map a value from 1-52 for each card in the deck. (eg {'acc':1,'acd':2,'ach':3,'acs':4,'twc':5, ....})
 
-def hand_id_mapper(values):
-    count = 0
+
+def hand_id_mapper(suits,ranks):
+    deck_rank = 0
     id_ranks = {}
-    for value in values.keys():
-        for i in range(4):
-            count += 1
-            id_ranks[value[:2]] = count
+    for rank in ranks.keys():
+        for suit in suits:
+            deck_rank += 1
+            id_ranks[f'{rank[:2]}{suit[0]}'] = deck_rank
     return id_ranks
-    
-id_ranks = hand_id_mapper(values)
 
 #To compress posssibilities, 5 unique suit combinations are represented:
 # 4d = 4 different suits; 3d = 3 different suits; 3s = 3 same suit; 2s = 2 of each; 4s = 4 same suit
-def hand_suit_signature(hand):
-    h = hand.Hand()
+def hand_suit_signature(a_hand):
+    h = hand.Hand(a_hand)
     composition = []
-    for key,value in h.suits:  
+    for key,value in h.suits.items():  
         composition.append(value)
     if len(composition) == 4:
         signature = "4d"
     elif len(composition) == 3:
         signature = "3d"
     elif len(composition) == 2:
-        for key,value in h.suits:
-            if value == 3:
+        for k,v in h.suits.items():
+            if v == 3:
                 signature = "3s"
-            elif value == 2:
+            elif v == 2:
                 signature = "2s"
     else:
         signature = "4s"
@@ -66,10 +65,12 @@ def hand_suit_signature(hand):
 # This resolves the issue of redundant permutations of the same combination of cards in a hand
 def hand_id(hand):
     signature = hand_suit_signature(hand)
+    id_ranks = hand_id_mapper(suits,ranks)
     ids = {}
+    ordered_hand_id = []
     for card in hand:
-        ids[card.id] = id_ranks[card.id]
-    ordered_hand_id = sorted(ids.items(), key=lambda x: x[1])
+        ids[f'{card.name[:2]}{card.suit[0]}'] = id_ranks[f'{card.name[:2]}{card.suit[0]}']
+    ordered_hand_id = sorted(ids.items(), key=lambda x: x[1], reverse=True)
     return f'{ordered_hand_id[0][0]}{ordered_hand_id[1][0]}{ordered_hand_id[2][0]}{ordered_hand_id[3][0]}{signature}'
 
 #strategy is one of maximization of points and is blind to other bot's cards with zero statistical adjustments
@@ -234,6 +235,8 @@ def learning_by_rounds():
 
             
 
+if __name__ == "__main__":
+    id_ranks = hand_id_mapper(suits, ranks)
 
 
 

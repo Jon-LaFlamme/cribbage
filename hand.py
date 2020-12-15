@@ -191,7 +191,7 @@ class Hand():
             score = h.compute_score()
             if score > max_score:
                 max_score = score
-                best_hand = combo
+                best_hand = hand
         return best_hand
 
 
@@ -242,8 +242,8 @@ class Hand():
         for card in self.hand:
             self.hand = stack.copy()
             self.hand.append(card)
-            return_tuple = self.points_from_runs()
-            if return_tuple[0]:
+            points = self.points_from_runs()
+            if points > 0:
                 self.hand = hand_copy.copy()
                 return card
         self.hand = hand_copy.copy

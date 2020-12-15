@@ -67,6 +67,7 @@ def test_points_from_runs():
     points = h.points_from_runs()
     print(f'- points from runs: {points}')
 
+
 def test_points_from_fifteens():
     d = deck.Deck()
     d.shuffle()
@@ -89,6 +90,7 @@ def test_points_from_fifteens():
     points = h.points_from_fifteens()
     print(f'- points from fifteens: {points}')
 
+
 def test_points_from_flush():
     d = deck.Deck()
     d.shuffle()
@@ -110,6 +112,7 @@ def test_points_from_flush():
     print("\n---------  TEST points from flush -------------\n")
     points = h.points_from_flush()
     print(f'- points from flush: {points}')
+
 
 def test_points_from_knobs():
     d = deck.Deck()
@@ -134,6 +137,7 @@ def test_points_from_knobs():
     points = h.points_from_knobs()
     print(f'- points from knobs: {points}')
 
+
 def test_compute_score():
     d = deck.Deck()
     d.shuffle()
@@ -154,6 +158,7 @@ def test_compute_score():
     print("\n---------  TEST compute score -------------\n")
     points = h.compute_score()
     print(f'- score: {points}')
+
 
 def test_optimize_by_points():
     print("\n---------  TEST optimize by points -------------\n")
