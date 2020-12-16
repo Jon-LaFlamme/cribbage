@@ -36,7 +36,7 @@ def test_display_hand():
     hand = []
     for i in range(4):
         hand.append(d.deal_one())
-    p.hand = hand
+    p.cards = hand
     print("\n---------  TEST display_hand() method without numbers  -------------\n")
     p.display_hand(False)
     print("\n---------  TEST display_hand() method with numbers  -------------\n")
@@ -51,14 +51,14 @@ def test_discard_computer(difficulty):
     discards = []
     for i in range(5):
         hand.append(d.deal_one())
-    p.hand = hand
+    p.cards = hand
     print(f"\n---------  TEST discard() method computer -- {difficulty}  -------------\n")
     print('---hand before discards---')
     p.display_hand(False)
     discards = p.discard(1)
     print('---hand after discards---')
     p.display_hand(False)
-    p.hand = discards
+    p.cards = discards
     print('---Discard choices---')
     p.display_hand(False)
 
@@ -71,14 +71,14 @@ def test_discard_human():
     discards = []
     for i in range(6):
         hand.append(d.deal_one())
-    p.hand = hand
+    p.cards = hand
     print(f"\n---------  TEST discard() method human -------------\n")
     print('---hand before discards---')
     p.display_hand(True)
     discards = p.discard(2)
     print('---hand after discards---')
     p.display_hand(False)
-    p.hand = discards
+    p.cards = discards
     print('---Discard choices---')
     p.display_hand(False)
 

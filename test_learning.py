@@ -118,8 +118,8 @@ def test_peg_sequence():
     p1 = players.computer('difficult')
     p2 = players.computer('difficult')
     for i in range(4):
-        p1.hand.append(d.deal_one())
-        p2.hand.append(d.deal_one())
+        p1.cards.append(d.deal_one())
+        p2.cards.append(d.deal_one())
     tc = d.deal_one()
     if tc.value > 6:
         is_dealer_p1 = True
@@ -131,10 +131,10 @@ def test_peg_sequence():
     print(f'turncard is {tc.name}')
     print('-------------------------------')
     print('\n------- player 1 hand ---------\n')
-    for card in p1.hand:
+    for card in p1.cards:
         print(f'- {card.name}')
     print('\n------- player 2 hand ---------\n')
-    for card in p2.hand:
+    for card in p2.cards:
         print(f'- {card.name}')
     print('\n-------------------------------')
     stack = learning.peg_sequence(is_dealer_p1,tc,p1,p2)
@@ -152,8 +152,8 @@ def test_show_sequence():
     p1 = players.computer('difficult')
     p2 = players.computer('difficult')
     for i in range(4):
-        p1.hand.append(d.deal_one())
-        p2.hand.append(d.deal_one())
+        p1.cards.append(d.deal_one())
+        p2.cards.append(d.deal_one())
     tc = d.deal_one()
     print('-------------------------------')
     print(f'turncard is {tc.name}')
@@ -162,10 +162,10 @@ def test_show_sequence():
     print(f'\n------- player 1 points: {p1.score} ---------')  
     print(f'------- player 2 points: {p2.score} ---------')
     print('\n------- player 1 hand ---------\n')
-    for card in p1.hand:
+    for card in p1.cards:
         print(f'- {card.name}')
     print('\n------- player 2 hand ---------\n')
-    for card in p2.hand:
+    for card in p2.cards:
         print(f'- {card.name}')
 
 def test_crib_sequence():
@@ -186,8 +186,8 @@ def test_crib_sequence():
     points = learning.crib_sequence(tc,crib)
     print(f'-- points from crib: {points} ')
 
-    
-
+def test_learning_by_rounds():
+    learning.learning_by_rounds(1)
 
 
 
@@ -205,7 +205,7 @@ if __name__ == "__main__":
     #test_determine_peg_points()
     #test_peg_sequence()
     #test_show_sequence()
-    test_crib_sequence()
-    #TODO(Jon) test_memorize_results()
-    #TODO(Jon) test_learning_by_rounds()
+    #test_crib_sequence()
+    test_learning_by_rounds()
+    #TODO(Jon) test_memorize_results() 
     #TODO(Jon) test_main()

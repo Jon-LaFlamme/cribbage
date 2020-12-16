@@ -13,12 +13,12 @@ class player():
         self.record: a dictionary of wins, losses, etc.
         self.score: int of a player's current score.
         self.is_human: a boolean representation of sentience
-        self.hand: a list of cards
+        self.cards: a list of cards
 
     Methods:
         self.cut_deck(self,deck)                            Cuts deck in place
         self.display_hand(self,is_numbered)                 is_numbered True when input is required
-        self.discard(self,num_discards)                     -> routes, to correct method, ret discards popped from self.hand 
+        self.discard(self,num_discards)                     -> routes, to correct method, ret discards popped from self.cards 
         self.update_score(self)                             updates player score
 
         TODO(Jon):
@@ -31,7 +31,7 @@ class player():
         self.record = {"wins": 0, "losses": 0}
         self.score = 0
         self.is_human = True
-        self.hand = []
+        self.cards = []
 
     def cut_deck(self,deck):
         if self.is_human:
@@ -48,7 +48,7 @@ class player():
         
     def display_hand(self,is_numbered):
         i = 0
-        for card in self.hand:
+        for card in self.cards:
             if is_numbered:
                 i += 1
                 print(f'{i}) {card.name} ')
@@ -78,7 +78,7 @@ class human(player):
         self.name set with string argument
 
     Methods:
-        self.user_discard(self,num_discards)                 -> ret discards poppedd from self.hand
+        self.user_discard(self,num_discards)                 -> ret discards poppedd from self.cards
     """
     def __init__(self, name = None):
         super().__init__()
@@ -92,14 +92,14 @@ class human(player):
             invalid = True
             while invalid:
                 index = int(input('Make your discard selection: ')) - 1
-                if index in range(0,len(self.hand)-1) and index not in indices:
+                if index in range(0,len(self.cards)-1) and index not in indices:
                     invalid = False
                     indices.append(index)
-                    discards.append(self.hand[index])
+                    discards.append(self.cards[index])
                 else:
                     print('Index Error: Please select a valid index.')
         for card in discards:
-            self.hand.remove(card)
+            self.cards.remove(card)
         return discards
         
 class computer(player):
@@ -107,9 +107,9 @@ class computer(player):
 
     Methods:
         self.cut_deck(self,deck)                            Cuts deck in place
-        self.auto_discard_easy(self,num_discards)            -> ret discards popped from self.hand
-        self.auto_discard_intermediate(self,num_discards)    -> ret discards popped from self.hand
-        self.auto_discard_difficult(self,num_discards)       -> ret discards popped from self.hand
+        self.auto_discard_easy(self,num_discards)            -> ret discards popped from self.cards
+        self.auto_discard_intermediate(self,num_discards)    -> ret discards popped from self.cards
+        self.auto_discard_difficult(self,num_discards)       -> ret discards popped from self.cards
 
 
         self.count(self)
@@ -130,7 +130,7 @@ class computer(player):
     def auto_discard_easy(self,num_discards):
         discards = []
         while len(discards) < num_discards:
-            discards.append(self.hand.pop(random.randint(0,len(self.hand)-1)))
+            discards.append(self.cards.pop(random.randint(0,len(self.cards)-1)))
         return discards
 
     def auto_discard_intermediate(self,num_discards):
