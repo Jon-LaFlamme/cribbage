@@ -87,16 +87,29 @@ def can_play(hand,count):
 def determine_peg_points(stack,count):
     points = 0
     h = hand.Hand(stack)
+    #points for 15 or 31
     if len(stack) > 1:
         if count == 15 or count ==  31:
             points += 2
-        count += h.points_from_runs()
-        if stack[-1] == stack[-2]:
+        #check for runs by working backward
+        if len(stack) > 2:
+            i = 3
+            max_run_points = 0
+            while i <= len(stack):
+                substack = hand.Hand(h.hand[-i:])
+                run_points = substack.points_from_runs()
+                if run_points > 0:
+                    max_run_points = run_points
+                else:
+                    break
+            points += max_run_points
+        #check for pairs
+        if stack[-1].rank == stack[-2].rank:
             points += 2
-            if len(stack) > 2 and stack[-2] == stack[-3]:
-                points += 4
-                if len(stack) > 3 and stack[-3] == stack[-4]:
-                    points += 6
+            if len(stack) > 2 and stack[-2].rank == stack[-3].rank:
+                points += 6
+                if len(stack) > 3 and stack[-3].rank == stack[-4].rank:
+                    points += 12
     return points
 
 

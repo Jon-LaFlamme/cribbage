@@ -98,6 +98,21 @@ class Hand():
         for key in ranks.keys():
             rank_list.append(key)
         rank_list.sort()
+        #To support longer runs as an edge case in pegging, special codeblock here
+        if len(ranks) == 7:
+            seven = {'1-2-3-4-5-6-7'}
+            hash_6_hi = f'{rank_list[1]}-{rank_list[2]}-{rank_list[3]}-{rank_list[4]}-{rank_list[5]}{rank_list[6]}{rank_list[7]}'
+            hash_7 = f'{rank_list[0]}-{rank_list[1]}-{rank_list[2]}-{rank_list[3]}-{rank_list[4]}{rank_list[5]}{rank_list[6]}{rank_list[7]}'
+            if hash_7 in seven:
+                return 7
+        if len(ranks) >= 6:
+            six = {'1-2-3-4-5-6','2-3-4-5-6-7'}
+            hash_6_lo = f'{rank_list[0]}-{rank_list[1]}-{rank_list[2]}-{rank_list[3]}-{rank_list[4]}{rank_list[5]}{rank_list[6]}'
+            if hash_6_lo in six:
+                return 6
+            elif len(ranks) == 7:
+                if hash_6_hi in six:
+                    return 6 
 
         #Create hash tables and keys to quickly identify run sequences in hand
         three = {'1-2-3','2-3-4','3-4-5','4-5-6','5-6-7','6-7-8','7-8-9','8-9-10','9-10-11','10-11-12','11-12-13'}
@@ -237,28 +252,25 @@ class Hand():
                     for card in self.hand:
                         if card.rank == key and key + count <= 31:
                             return card
-        #check for a run
-        hand_copy = self.hand.copy()
-        for card in self.hand:
-            self.hand = stack.copy()
-            self.hand.append(card)
-            points = self.points_from_runs()
-            if points > 0:
-                self.hand = hand_copy.copy()
-                return card
-        self.hand = hand_copy.copy
+            #check for a run
+            for card in self.hand:
+                stack_copy = stack.copy()
+                stack_copy.append(card)
+                stack_plus_one = Hand(stack_copy)
+                points = stack_plus_one.points_from_runs()
+                if points > 0 and card.value + count <= 31:
+                    return card
         #check for a fifteen or 31
         for card in self.hand:
             if card.value + count == 15 or card.value + count == 31:
                 return card
         #check for a single pair
-        for unplayed_card in self.hand:
-            for played_card in stack:
-                if unplayed_card.rank == played_card.rank and unplayed_card.rank + count <= 31:
-                    return unplayed_card
+        for card in self.hand:
+            if card.rank == stack[-1].rank and card.value + count <= 31:
+                return card
         #finally, play first card under 31
         for card in self.hand:
-            if card.rank + count < 31:
+            if card.value + count < 31:
                 return card
 
 
