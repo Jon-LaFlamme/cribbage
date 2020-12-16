@@ -1,6 +1,7 @@
 import learning
 import deck
 import random
+import players
 
 
 def test_hand_id_mapper():
@@ -110,6 +111,90 @@ def test_determine_peg_points():
         print(f'------- peg points:  {points} ---------')
     
 
+def test_peg_sequence():
+    print('\n--------- Test peg sequence ---------\n')
+    d = deck.Deck()
+    d.shuffle()
+    p1 = players.computer('difficult')
+    p2 = players.computer('difficult')
+    for i in range(4):
+        p1.hand.append(d.deal_one())
+        p2.hand.append(d.deal_one())
+    tc = d.deal_one()
+    if tc.value > 6:
+        is_dealer_p1 = True
+        print('-------- player 1 is dealer ---------')
+    else:
+        is_dealer_p1 = False
+        print('-------- player 2 is dealer ---------')
+    print('-------------------------------')
+    print(f'turncard is {tc.name}')
+    print('-------------------------------')
+    print('\n------- player 1 hand ---------\n')
+    for card in p1.hand:
+        print(f'- {card.name}')
+    print('\n------- player 2 hand ---------\n')
+    for card in p2.hand:
+        print(f'- {card.name}')
+    print('\n-------------------------------')
+    stack = learning.peg_sequence(is_dealer_p1,tc,p1,p2)
+    print('\n------- stack ---------')
+    for card in stack:
+        print(f'- {card.name}')
+    print(f'\n------- player 1 points: {p1.score} ---------')  
+    print(f'------- player 2 points: {p2.score} ---------')
+
+
+def test_show_sequence():
+    print('\n--------- Test show sequence ---------\n')
+    d = deck.Deck()
+    d.shuffle()
+    p1 = players.computer('difficult')
+    p2 = players.computer('difficult')
+    for i in range(4):
+        p1.hand.append(d.deal_one())
+        p2.hand.append(d.deal_one())
+    tc = d.deal_one()
+    print('-------------------------------')
+    print(f'turncard is {tc.name}')
+    print('-------------------------------')
+    learning.show_sequence(tc,p1,p2)
+    print(f'\n------- player 1 points: {p1.score} ---------')  
+    print(f'------- player 2 points: {p2.score} ---------')
+    print('\n------- player 1 hand ---------\n')
+    for card in p1.hand:
+        print(f'- {card.name}')
+    print('\n------- player 2 hand ---------\n')
+    for card in p2.hand:
+        print(f'- {card.name}')
+
+def test_crib_sequence():
+    print('\n--------- Test crib sequence ---------\n')
+    d = deck.Deck()
+    d.shuffle()
+    crib = []
+    for i in range(4):   
+        crib.append(d.deal_one())
+    tc = d.deal_one()
+    print('-------------------------------')
+    print(f'turncard is {tc.name}')
+    print('-------------------------------')
+    print('\n----------- crib ------------')
+    for card in crib:
+        print(f'- {card.name}')
+    print('-------------------------------')
+    points = learning.crib_sequence(tc,crib)
+    print(f'-- points from crib: {points} ')
+
+    
+
+
+
+
+
+
+
+
 
 if __name__ == "__main__":
     #test_hand_id_mapper()
@@ -118,9 +203,9 @@ if __name__ == "__main__":
     #test_can_play()
     #test_peg_logic()
     #test_determine_peg_points()
-    #TODO(Jon) test_peg_sequence()
-    #TODO(Jon) test_show_sequence()
-    #TODO(Jon) test_crib_sequence()
+    #test_peg_sequence()
+    #test_show_sequence()
+    test_crib_sequence()
     #TODO(Jon) test_memorize_results()
     #TODO(Jon) test_learning_by_rounds()
     #TODO(Jon) test_main()

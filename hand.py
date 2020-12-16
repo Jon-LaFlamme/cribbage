@@ -101,13 +101,13 @@ class Hand():
         #To support longer runs as an edge case in pegging, special codeblock here
         if len(ranks) == 7:
             seven = {'1-2-3-4-5-6-7'}
-            hash_6_hi = f'{rank_list[1]}-{rank_list[2]}-{rank_list[3]}-{rank_list[4]}-{rank_list[5]}{rank_list[6]}{rank_list[7]}'
-            hash_7 = f'{rank_list[0]}-{rank_list[1]}-{rank_list[2]}-{rank_list[3]}-{rank_list[4]}{rank_list[5]}{rank_list[6]}{rank_list[7]}'
+            hash_6_hi = f'{rank_list[1]}-{rank_list[2]}-{rank_list[3]}-{rank_list[4]}-{rank_list[5]}{rank_list[6]}'
+            hash_7 = f'{rank_list[0]}-{rank_list[1]}-{rank_list[2]}-{rank_list[3]}-{rank_list[4]}{rank_list[5]}{rank_list[6]}'
             if hash_7 in seven:
                 return 7
         if len(ranks) >= 6:
             six = {'1-2-3-4-5-6','2-3-4-5-6-7'}
-            hash_6_lo = f'{rank_list[0]}-{rank_list[1]}-{rank_list[2]}-{rank_list[3]}-{rank_list[4]}{rank_list[5]}{rank_list[6]}'
+            hash_6_lo = f'{rank_list[0]}-{rank_list[1]}-{rank_list[2]}-{rank_list[3]}-{rank_list[4]}{rank_list[5]}'
             if hash_6_lo in six:
                 return 6
             elif len(ranks) == 7:

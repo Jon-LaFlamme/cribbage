@@ -114,6 +114,8 @@ def determine_peg_points(stack,count):
 
 
 def peg_sequence(is_dealer_p1,turncard,p1,p2):
+    #multistack for testing only
+    #multistack = []
     hand1 = p1.hand.copy()
     hand2 = p2.hand.copy()
     if is_dealer_p1:
@@ -129,7 +131,7 @@ def peg_sequence(is_dealer_p1,turncard,p1,p2):
                 count += choice.value
                 stack.append(choice)
                 hand1.remove(choice)
-                p1.points += determine_peg_points(stack,count)
+                p1.score += determine_peg_points(stack,count)
                 p1_turn = False
                 p1_played_last = True
             if can_play(hand2,count):
@@ -137,7 +139,7 @@ def peg_sequence(is_dealer_p1,turncard,p1,p2):
                 count += choice.value
                 stack.append(choice)
                 hand2.remove(choice)
-                p2.points += determine_peg_points(stack,count)
+                p2.score += determine_peg_points(stack,count)
                 p1_turn = True
                 p1_played_last = False
         if count < 31:
@@ -145,17 +147,21 @@ def peg_sequence(is_dealer_p1,turncard,p1,p2):
                 p1.score += 1
             else:
                 p2.score += 1
-
+        #For testing only
+        #print(f' count sums to {count}')   
+        #multistack.extend(stack)
+    #return multistack
+    
 
 def show_sequence(turncard,p1,p2):
-    h1 = hand.Hand(p1.hand, turncard)
-    h2 = hand.Hand(p2.hand, turncard)
-    p1.points += h1.compute_score()
-    p2.points += h2.compute_score()
+    h1 = hand.Hand(p1.hand, turncard=turncard)
+    h2 = hand.Hand(p2.hand, turncard=turncard)
+    p1.score += h1.compute_score()
+    p2.score += h2.compute_score()
 
 
-def crib_sequence(turncard,hand):
-    c = hand.Hand(hand, is_crib=True, turncard=turncard)
+def crib_sequence(turncard,crib_hand):
+    c = hand.Hand(crib_hand, is_crib=True, turncard=turncard)
     return c.compute_score()
 
 
