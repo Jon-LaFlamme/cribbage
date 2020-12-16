@@ -187,7 +187,7 @@ def test_crib_sequence():
     print(f'-- points from crib: {points} ')
 
 def test_learning_by_rounds():
-    learning.learning_by_rounds(1)
+    learning.learning_by_rounds(2)
 
 
 

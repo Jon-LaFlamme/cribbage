@@ -208,6 +208,7 @@ def memorize_results(p1, p2, p1_peg, p2_peg, crib_pts, p1_is_dealer):
         performance_by_hand[h1]['hand_pts'] += p1.score - p1_peg
         performance_by_hand[h1]['neg_crib_pts'] -= crib_pts
 
+def learning_by_rounds_helper():    #Think having a memory slowdown. This is to speed things up.
 
 def learning_by_rounds(num_rounds):
     p1 = players.computer('difficult')
@@ -216,6 +217,7 @@ def learning_by_rounds(num_rounds):
     d.shuffle()
     is_dealer_p1 = True
 
+    iteration = 0
     for round in range(num_rounds):
 
         print(f'Starting round {round+1} of computer vs computer ...')
@@ -229,11 +231,12 @@ def learning_by_rounds(num_rounds):
         p1.cut_deck(d)
         turncard = d.deck[0]
         for p1_hand,p2_hand in zip(p1_options,p2_options):
-            p1.points = 0
-            p2.points = 0
+            iteration += 1
+            p1.score = 0
+            p2.score = 0
             crib = []
-            p1.cards = p1_hand
-            p2.cards = p2_hand
+            p1.cards = list(p1_hand).copy()
+            p2.cards = list(p2_hand).copy()
             #extract the crib
             for p1_card,p2_card in zip(p1.cards,p2.cards):
                 if p1_card in p1.cards:
@@ -246,9 +249,15 @@ def learning_by_rounds(num_rounds):
             #Updates scores in place from hand + turncard
             show_sequence(turncard,p1,p2)
             #Returns points from crib
-            crib_pts = crib_sequence(turncard, hand)
+            crib_pts = crib_sequence(turncard, crib)
             #Memorize the results
-            memorize_results(p1, p2, p1_peg, p2_peg, crib_pts, is_dealer_p1)
+            #memorize_results(p1, p2, p1_peg, p2_peg, crib_pts, is_dealer_p1)
+            #below is test output only
+            print(f' \nplayer 1 score, iteration {iteration + 1}: {p1.score}')
+            print(f' player 1 peg points {p1_peg}')
+            print(f' player 2 score, iteration {iteration + 1}: {p2.score}')
+            print(f' player 2 peg points {p2_peg}')
+            print(f' crib points, iteration {iteration + 1}: {crib_pts}')
 
 
             
