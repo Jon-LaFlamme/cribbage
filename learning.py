@@ -121,7 +121,7 @@ def determine_peg_points(stack,count):
 
 def peg_sequence(is_dealer_p1,turncard,p1,p2):
     #multistack for testing only
-    #multistack = []
+    multistack = []
     hand1 = list(p1.cards).copy()
     hand2 = list(p2.cards).copy()
     if is_dealer_p1:
@@ -154,9 +154,9 @@ def peg_sequence(is_dealer_p1,turncard,p1,p2):
             else:
                 p2.score += 1
         #For testing only
-        #print(f' count sums to {count}')   
-        #multistack.extend(stack)
-    #return multistack
+        print(f' count sums to {count}')   
+        multistack.extend(stack)
+    return multistack
     
 
 def show_sequence(turncard,p1,p2):
@@ -258,24 +258,25 @@ def learning_by_hands(intelligent=True):
     p2_peg = p2.score  
     show_sequence(turncard,p1,p2)
     crib_pts = crib_sequence(turncard, crib)
-
+    time.sleep(1)
     #Memorize the results
     memorize_results(p1, p2, p1_peg, p2_peg, crib_pts, is_dealer_p1)
 
-
 if __name__ == "__main__":
 
+    '''
     with open('outcomes.json','r') as f:
         performance_by_hand = json.load(f)
 
-    for i in range(20):
+    for i in range(2):
         learning_by_hands(intelligent=True)
+        time.sleep(1)
 
     print(f' length of peformance by hand: {len(performance_by_hand)}')
 
     with open('outcomes.json', 'w') as f:
         json.dump(performance_by_hand, f)
-
+    '''
 
 
 

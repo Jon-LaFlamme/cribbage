@@ -45,7 +45,7 @@ def test_can_play():
     print('\n--------- Test can play ---------\n')
     d = deck.Deck()
     d.shuffle()
-    count = random.randint(0,31)
+    count = random.randint(25,31)
     hand = []
     for i in range(4):
         hand.append(d.deal_one())
@@ -98,7 +98,7 @@ def test_determine_peg_points():
     d.shuffle()
     count = 0
     stack = []
-    for i in range(random.randint(2,7)):
+    for i in range(random.randint(2,4)):
         stack.append(d.deal_one())
     print('------- stack is ---------')
     for card in stack:
@@ -310,8 +310,8 @@ if __name__ == "__main__":
     #test_hand_id()
     #test_can_play()
     #test_peg_logic()
-    #test_determine_peg_points()
-    #test_peg_sequence()        
+    #test_determine_peg_points()        #TODO(Jon) Lousy test, needs to be reworked
+    test_peg_sequence()                 #TODO(Jon) peg_sequence Appears to be the choke point in learning.py
     #test_show_sequence()
     #test_crib_sequence()
     #test_learning_by_hands(intellligent=False)    
