@@ -4,7 +4,6 @@ import hand
 from itertools import combinations
 import json
 import random
-import time
 
 ranks = {'ace':1,'two':2,'three':3,'four':4,'five':5,'six':6,'seven':7,'eight':8,
     'nine':9,'ten':10,'jack':11,'queen':12,'king':13}
@@ -172,7 +171,7 @@ def crib_sequence(turncard,crib_hand):
 def memorize_results(p1, p2, p1_peg, p2_peg, crib_pts, p1_is_dealer):
     h1 = hand_id(p1.cards)
     h2 = hand_id(p2.cards)
-    hand_vec = [h1,h2]
+    hand_vec = [h1,h2]  
     #initialize hand if not present in hash table
     for hand in hand_vec:
         if hand not in performance_by_hand:
@@ -248,26 +247,24 @@ def learning_by_hands(intelligent=True):
             if cp2 not in h2_selects:
                 crib.append(cp2)
 
-    time.sleep(1)
     #Main driver block: peg sequence updates player scores; scores stored before updated again in show_sequence 
     peg_sequence(is_dealer_p1, turncard, p1, p2)
-    time.sleep(1)  
     p1_peg = p1.score
     p2_peg = p2.score  
     show_sequence(turncard,p1,p2)
     crib_pts = crib_sequence(turncard, crib)
-    time.sleep(1)
-    #Memorize the results
-    memorize_results(p1, p2, p1_peg, p2_peg, crib_pts, is_dealer_p1)
+    #Memorize the results, check for occasionally memory corruption
+    if len(p1.cards) == 4 and len(p2.cards) == 4:
+        memorize_results(p1, p2, p1_peg, p2_peg, crib_pts, is_dealer_p1)
+
 
 if __name__ == "__main__":
 
     with open('outcomes.json','r') as f:
         performance_by_hand = json.load(f)
 
-    for i in range(100):
+    for i in range(30):
         learning_by_hands(intelligent=True)
-        time.sleep(1)
 
     print(f' length of peformance by hand: {len(performance_by_hand)}')
 
