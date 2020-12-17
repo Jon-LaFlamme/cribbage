@@ -72,8 +72,8 @@ def hand_id(hand):
     ordered_hand_id = []
     for card in hand:
         ids[f'{card.name[:2]}{card.suit[0]}'] = id_ranks[f'{card.name[:2]}{card.suit[0]}']
-    ordered_hand_id = sorted(ids.items(), key=lambda x: x[1], reverse=True)
-    return f'{ordered_hand_id[0][0]}{ordered_hand_id[1][0]}{ordered_hand_id[2][0]}{ordered_hand_id[3][0]}{signature}'
+    ordered_hand_id = sorted(ids.items(), key=lambda x: x[1], reverse=True) 
+    return f'{ordered_hand_id[0][0][:2]}{ordered_hand_id[1][0][:2]}{ordered_hand_id[2][0][:2]}{ordered_hand_id[3][0][:2]}{signature}'
 
 
 #strategy is one of maximization of points and is blind to other bot's cards with zero statistical adjustments
@@ -263,7 +263,7 @@ if __name__ == "__main__":
     with open('outcomes.json','r') as f:
         performance_by_hand = json.load(f)
 
-    for i in range(30):
+    for i in range(5000):
         learning_by_hands(intelligent=True)
 
     print(f' length of peformance by hand: {len(performance_by_hand)}')
