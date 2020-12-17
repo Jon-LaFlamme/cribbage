@@ -262,17 +262,17 @@ def learning_by_hands(intelligent=True):
 
 if __name__ == "__main__":
 
-    #with open('outcomes.json','r') as f:
-        #performance_by_hand = json.load(f)
+    with open('outcomes.json','r') as f:
+        performance_by_hand = json.load(f)
 
-    for i in range(2):
+    for i in range(1):
         learning_by_hands(intelligent=True)
 
-    for item in performance_by_hand:
-        print(item)
+    for key in performance_by_hand:
+        print(key)
 
-    #with open('outcomes.json', 'w') as f:
-        #json.dump(performance_by_hand, f)
+    with open('outcomes.json', 'w') as f:
+        json.dump(performance_by_hand, f)
 
 
 
