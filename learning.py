@@ -4,6 +4,7 @@ import hand
 from itertools import combinations
 import json
 import random
+import time
 
 ranks = {'ace':1,'two':2,'three':3,'four':4,'five':5,'six':6,'seven':7,'eight':8,
     'nine':9,'ten':10,'jack':11,'queen':12,'king':13}
@@ -249,8 +250,10 @@ def learning_by_hands(intelligent=True):
             if cp2 not in h2_selects:
                 crib.append(cp2)
 
+    time.sleep(1)
     #Main driver block: peg sequence updates player scores; scores stored before updated again in show_sequence 
-    peg_sequence(is_dealer_p1, turncard, p1, p2)  
+    peg_sequence(is_dealer_p1, turncard, p1, p2)
+    time.sleep(1)  
     p1_peg = p1.score
     p2_peg = p2.score  
     show_sequence(turncard,p1,p2)
@@ -265,11 +268,10 @@ if __name__ == "__main__":
     with open('outcomes.json','r') as f:
         performance_by_hand = json.load(f)
 
-    for i in range(1):
+    for i in range(20):
         learning_by_hands(intelligent=True)
 
-    for key in performance_by_hand:
-        print(key)
+    print(f' length of peformance by hand: {len(performance_by_hand)}')
 
     with open('outcomes.json', 'w') as f:
         json.dump(performance_by_hand, f)
