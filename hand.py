@@ -47,12 +47,13 @@ class Hand():
         points = 0
         collection = []
         if self.turncard:
-            hand = self.hand.copy()
-            hand.append(self.turncard)
-            fives = combinations(hand,5)
-            fours = combinations(hand,4)
-            threes = combinations(hand,3)
-            twos = combinations(hand,2)
+            c = list(self.hand).copy()
+            c.append(self.turncard)
+            h = Hand(c)
+            fives = combinations(h.hand,5)
+            fours = combinations(h.hand,4)
+            threes = combinations(h.hand,3)
+            twos = combinations(h.hand,2)
             collection = [fives,fours,threes,twos]
         else:
             fours = combinations(self.hand,4)
@@ -206,7 +207,7 @@ class Hand():
             score = h.compute_score()
             if score > max_score:
                 max_score = score
-                best_hand = hand
+                best_hand = combo
         return best_hand
 
 

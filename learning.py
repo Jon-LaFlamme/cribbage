@@ -2,6 +2,8 @@ import deck
 import players
 import hand
 from itertools import combinations
+import json
+import random
 
 ranks = {'ace':1,'two':2,'three':3,'four':4,'five':5,'six':6,'seven':7,'eight':8,
     'nine':9,'ten':10,'jack':11,'queen':12,'king':13}
@@ -73,16 +75,19 @@ def hand_id(hand):
     ordered_hand_id = sorted(ids.items(), key=lambda x: x[1], reverse=True)
     return f'{ordered_hand_id[0][0]}{ordered_hand_id[1][0]}{ordered_hand_id[2][0]}{ordered_hand_id[3][0]}{signature}'
 
+
 #strategy is one of maximization of points and is blind to other bot's cards with zero statistical adjustments
 def peg_logic(hand_playing,stack,count,turncard):
     h = hand.Hand(hand_playing,turncard)
     return h.peg_selection(stack,count,turncard)
+
 
 def can_play(hand,count):
     for card in hand:
         if card.value + count <= 31:
             return True
     return False
+
 
 def determine_peg_points(stack,count):
     points = 0
@@ -116,8 +121,8 @@ def determine_peg_points(stack,count):
 def peg_sequence(is_dealer_p1,turncard,p1,p2):
     #multistack for testing only
     #multistack = []
-    hand1 = p1.cards.copy()
-    hand2 = p2.cards.copy()
+    hand1 = list(p1.cards).copy()
+    hand2 = list(p2.cards).copy()
     if is_dealer_p1:
         p1_turn = True
     else:
@@ -166,22 +171,21 @@ def crib_sequence(turncard,crib_hand):
 
 
 def memorize_results(p1, p2, p1_peg, p2_peg, crib_pts, p1_is_dealer):
-    performance_by_hand = {}
     h1 = hand_id(p1.cards)
     h2 = hand_id(p2.cards)
     hand_vec = [h1,h2]
     #initialize hand if not present in hash table
     for hand in hand_vec:
         if hand not in performance_by_hand:
-            performance_by_hand[h1]['times_nodeal'] = 0
-            performance_by_hand[h1]['times_dealer'] = 0
-            performance_by_hand[h1]['dealer_neg_peg'] = 0
-            performance_by_hand[h1]['nodeal_neg_peg'] = 0
-            performance_by_hand[h1]['dealer_pos_peg'] = 0
-            performance_by_hand[h1]['nodeal_pos_peg'] = 0
-            performance_by_hand[h1]['hand_pts'] = 0
-            performance_by_hand[h1]['neg_crib_pts'] = 0
-            performance_by_hand[h1]['pos_crib_pts'] = 0
+            performance_by_hand[hand] = {'times_nodeal':0,
+                                       'times_dealer':0,
+                                       'dealer_neg_peg':0,
+                                       'nodeal_neg_peg':0,
+                                       'dealer_pos_peg':0,
+                                       'nodeal_pos_peg':0,
+                                       'hand_pts':0,
+                                       'neg_crib_pts':0,
+                                       'pos_crib_pts':0}
 
     if p1_is_dealer:
         performance_by_hand[h1]['times_dealer'] += 1
@@ -208,65 +212,67 @@ def memorize_results(p1, p2, p1_peg, p2_peg, crib_pts, p1_is_dealer):
         performance_by_hand[h1]['hand_pts'] += p1.score - p1_peg
         performance_by_hand[h1]['neg_crib_pts'] -= crib_pts
 
-def learning_by_rounds_helper():    #Think having a memory slowdown. This is to speed things up.
 
-def learning_by_rounds(num_rounds):
-    p1 = players.computer('difficult')
-    p2 = players.computer('difficult')
+def learning_by_hands(intelligent=True):
+    #Function initializations: setup players, deck, turncard, local variables, determine dealer
+    p1 = players.computer("moderate")
+    p2 = players.computer("moderate")
     d = deck.Deck()
     d.shuffle()
+    crib = []
+    turncard = d.deal_one()
     is_dealer_p1 = True
+    if random.randint(0,9) & 1  == 1:
+        is_dealer_p1 = False
 
-    iteration = 0
-    for round in range(num_rounds):
+    #Allows learning Function to focus either on random configurations or heuristically influenced configurations 
+    if not intelligent:
+        for i in range(4):
+            p1.cards.append(d.deal_one())
+            p2.cards.append(d.deal_one())
+            crib.append(d.deal_one())
+    else:
+        p1_dealt_hand = []
+        p2_dealt_hand = []
+        for i in range(6):
+            p1_dealt_hand.append(d.deal_one())
+            p2_dealt_hand.append(d.deal_one())
+        h1 = hand.Hand(p1_dealt_hand)
+        h2 = hand.Hand(p2_dealt_hand)
+        h1_selects = h1.optimize_by_points()
+        h2_selects = h2.optimize_by_points()
+        p1.cards = list(h1_selects)
+        p2.cards = list(h2_selects)
+        for cp1,cp2 in zip(p1_dealt_hand,p2_dealt_hand):
+            if cp1 not in h1_selects:
+                crib.append(cp1)
+            if cp2 not in h2_selects:
+                crib.append(cp2)
 
-        print(f'Starting round {round+1} of computer vs computer ...')
-        hand1 = []
-        hand2 = []
-        for card in range(6):
-            hand1.append(d.deal_one())
-            hand2.append(d.deal_one())
-        p1_options = list(combinations(hand1,4))
-        p2_options = list(combinations(hand2,4))
-        p1.cut_deck(d)
-        turncard = d.deck[0]
-        for p1_hand,p2_hand in zip(p1_options,p2_options):
-            iteration += 1
-            p1.score = 0
-            p2.score = 0
-            crib = []
-            p1.cards = list(p1_hand).copy()
-            p2.cards = list(p2_hand).copy()
-            #extract the crib
-            for p1_card,p2_card in zip(p1.cards,p2.cards):
-                if p1_card in p1.cards:
-                    crib.append(p1_card)
-                if p2_card in p2.cards:
-                    crib.append(p2_card)
-            peg_sequence(is_dealer_p1,turncard,p1,p2)
-            p1_peg = p1.score
-            p2_peg = p2.score
-            #Updates scores in place from hand + turncard
-            show_sequence(turncard,p1,p2)
-            #Returns points from crib
-            crib_pts = crib_sequence(turncard, crib)
-            #Memorize the results
-            #memorize_results(p1, p2, p1_peg, p2_peg, crib_pts, is_dealer_p1)
-            #below is test output only
-            print(f' \nplayer 1 score, iteration {iteration + 1}: {p1.score}')
-            print(f' player 1 peg points {p1_peg}')
-            print(f' player 2 score, iteration {iteration + 1}: {p2.score}')
-            print(f' player 2 peg points {p2_peg}')
-            print(f' crib points, iteration {iteration + 1}: {crib_pts}')
+    #Main driver block: peg sequence updates player scores; scores stored before updated again in show_sequence 
+    peg_sequence(is_dealer_p1, turncard, p1, p2)  
+    p1_peg = p1.score
+    p2_peg = p2.score  
+    show_sequence(turncard,p1,p2)
+    crib_pts = crib_sequence(turncard, crib)
 
+    #Memorize the results
+    memorize_results(p1, p2, p1_peg, p2_peg, crib_pts, is_dealer_p1)
 
-            
 
 if __name__ == "__main__":
-    id_ranks = hand_id_mapper(suits, ranks)
 
+    #with open('outcomes.json','r') as f:
+        #performance_by_hand = json.load(f)
 
+    for i in range(2):
+        learning_by_hands(intelligent=True)
 
+    for item in performance_by_hand:
+        print(item)
+
+    #with open('outcomes.json', 'w') as f:
+        #json.dump(performance_by_hand, f)
 
 
 
