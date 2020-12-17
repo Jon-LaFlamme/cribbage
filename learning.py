@@ -92,7 +92,7 @@ def can_play(hand,count):
 
 def determine_peg_points(stack,count):
     points = 0
-    h = hand.Hand(stack)
+    h = stack.copy()
     #points for 15 or 31
     if len(stack) > 1:
         if count == 15 or count ==  31:
@@ -102,12 +102,13 @@ def determine_peg_points(stack,count):
             i = 3
             max_run_points = 0
             while i <= len(stack):
-                substack = hand.Hand(h.hand[-i:])
+                substack = hand.Hand(h[-i:])
                 run_points = substack.points_from_runs()
                 if run_points > 0:
                     max_run_points = run_points
                 else:
                     break
+                i += 1
             points += max_run_points
         #check for pairs
         if stack[-1].rank == stack[-2].rank:
@@ -115,13 +116,12 @@ def determine_peg_points(stack,count):
             if len(stack) > 2 and stack[-2].rank == stack[-3].rank:
                 points += 6
                 if len(stack) > 3 and stack[-3].rank == stack[-4].rank:
-                    points += 12
+                    points += 12   
     return points
 
 
+
 def peg_sequence(is_dealer_p1,turncard,p1,p2):
-    #multistack for testing only
-    multistack = []
     hand1 = list(p1.cards).copy()
     hand2 = list(p2.cards).copy()
     if is_dealer_p1:
@@ -138,7 +138,6 @@ def peg_sequence(is_dealer_p1,turncard,p1,p2):
                 stack.append(choice)
                 hand1.remove(choice)
                 p1.score += determine_peg_points(stack,count)
-                p1_turn = False
                 p1_played_last = True
             if can_play(hand2,count):
                 choice = peg_logic(hand2,stack,count,turncard)
@@ -148,15 +147,14 @@ def peg_sequence(is_dealer_p1,turncard,p1,p2):
                 p2.score += determine_peg_points(stack,count)
                 p1_turn = True
                 p1_played_last = False
+            else:
+                p1_turn = True
         if count < 31:
             if p1_played_last:
                 p1.score += 1
             else:
                 p2.score += 1
-        #For testing only
-        print(f' count sums to {count}')   
-        multistack.extend(stack)
-    return multistack
+
     
 
 def show_sequence(turncard,p1,p2):
@@ -264,11 +262,10 @@ def learning_by_hands(intelligent=True):
 
 if __name__ == "__main__":
 
-    '''
     with open('outcomes.json','r') as f:
         performance_by_hand = json.load(f)
 
-    for i in range(2):
+    for i in range(100):
         learning_by_hands(intelligent=True)
         time.sleep(1)
 
@@ -276,7 +273,7 @@ if __name__ == "__main__":
 
     with open('outcomes.json', 'w') as f:
         json.dump(performance_by_hand, f)
-    '''
+
 
 
 

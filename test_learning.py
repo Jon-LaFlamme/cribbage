@@ -139,10 +139,7 @@ def test_peg_sequence():
     for card in p2.cards:
         print(f'- {card.name}')
     print('\n-------------------------------')
-    stack = learning.peg_sequence(is_dealer_p1,tc,p1,p2)
-    print('\n------- stack ---------')
-    for card in stack:
-        print(f'- {card.name}')
+    learning.peg_sequence(is_dealer_p1,tc,p1,p2)
     print(f'\n------- player 1 points: {p1.score} ---------')  
     print(f'------- player 2 points: {p2.score} ---------')
 
@@ -311,9 +308,9 @@ if __name__ == "__main__":
     #test_can_play()
     #test_peg_logic()
     #test_determine_peg_points()        #TODO(Jon) Lousy test, needs to be reworked
-    test_peg_sequence()                 #TODO(Jon) peg_sequence Appears to be the choke point in learning.py
+    #test_peg_sequence()                
     #test_show_sequence()
     #test_crib_sequence()
     #test_learning_by_hands(intellligent=False)    
     #test_memorize_results() 
-    #TODO(Jon) test_main()
+
