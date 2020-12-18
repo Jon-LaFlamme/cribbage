@@ -118,5 +118,5 @@ if __name__ == "__main__":
     #test_deck_cut()
     #test_deck_shuffle()
     #test_deck_deal_one()
-    card_ids()
+    #card_ids()
 
