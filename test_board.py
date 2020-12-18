@@ -8,6 +8,22 @@ def test_BoardMember_constructor():
     print(f'- lead peg: {bm.lead_peg}')
  
 
+def test_Classic_constructor():
+    print('\n--------- Test Board constructor -------------\n')
+    b = board.Classic('Jon','Rick')
+    print(f'- Player 1 name:     {b.player_one.name}')
+    print(f'- Player 2 name:     {b.player_two.name}\n')
+    b.display_board()
+
+def test_update_pegs():
+    print('\n--------- Test Board constructor -------------\n')
+    b = board.Classic('Jon','Rick')
+    b.update_pegs('Jon', 5)
+    b.update_pegs('Rick', 3)
+    b.display_board()
+    b.update_pegs('Jon', 9)
+    b.update_pegs('Rick', 11)
+    b.display_board()
 
 
 
@@ -16,10 +32,6 @@ def test_BoardMember_constructor():
 
 
 if __name__ == "__main__":
-    test_BoardMember_constructor()
-    #TODO(Jon) test_Board_constructor()
-    #TODO(Jon) test_Classic_constructor()
-
-    #TODO(Jon) test_update_pegs()
-    #TODO(Jon) test_update_board()
-    #TOOD(Jon) test_display_board()
+    #test_BoardMember_constructor()
+    #test_Classic_constructor()
+    #test_update_pegs()
