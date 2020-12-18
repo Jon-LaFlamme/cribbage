@@ -5,6 +5,11 @@ from itertools import combinations
 import json
 import random
 
+#TODO(Jon)  performance_by_hand:    remove neg_crib_pts, pos_crib_pts, times_nodeal, times_dealer
+#TODO(Jon)  discard_outcomes:       {discard_id: {times_dealer: +, times_nodeal: +, pos_crib_pts: +, neg_crib_pts: -}
+
+
+
 ranks = {'ace':1,'two':2,'three':3,'four':4,'five':5,'six':6,'seven':7,'eight':8,
     'nine':9,'ten':10,'jack':11,'queen':12,'king':13}
 suits = ['clubs','diamonds','hearts','spades']

@@ -15,6 +15,7 @@ def test_Classic_constructor():
     print(f'- Player 2 name:     {b.player_two.name}\n')
     b.display_board()
 
+
 def test_update_pegs():
     print('\n--------- Test Board constructor -------------\n')
     b = board.Classic('Jon','Rick')
