@@ -1,6 +1,7 @@
 #TODO(Jon) This module will require online components for production, but will be locally implemented in this package
 import os
 
+MATCH_TEMPLATE = {'win': 0, 'was_skunked': 0, 'was_dbl_sunked': 0, 'skunked_opponent': 0, 'dbl_skunked_oppenent': 0}
 
 PROFILE_TEMPLATE = {'email': 'none',
                     'rank': 0,
@@ -49,6 +50,7 @@ class User():
 
     def __init__(self, username, email):
         self.name = username
+        self.match_stats = MATCH_TEMPLATE
         if os.path.exists(f'{self.name}.json'):
             with open(f'{self.name}.json','r') as f:
                 self.profile = json.load(f)
@@ -56,34 +58,86 @@ class User():
             self.profile = {username: PROFILE_TEMPLATE}
             with open(f'{self.name}.json', 'w') as f:
                 f.write(self.profile)
-
-
-    def display_stats(self):
-        print(f'======== Player stats for {self.name} ========\n')
-        print(f'Rank: {self.profile['rank']}')
-        print(f'Badges: {self.profile['badges']}')
-        print(f'Boards unlocked: {self.profile['boards_unlocked']}/10')
-        print('============================================== \n')
-        print('     vs Humans        ||         vs Computer   \n')
-        print(f'WINS:            {self.profile['vs_human']['wins']}            EASY WINS:            {self.profile['vs_computer']['easy_wins']}       ')
-        print(f'LOSSES:          {self.profile['vs_human']['wins']}            EASY LOSSES:          {self.profile['vs_computer']['easy_losses']}       ')
-        print(f'SKUNKS:          {self.profile['vs_human']['skunks']}            MEDIUM WINS:          {self.profile['vs_computer']['medium_wins']}       ')
-        print(f'SKUNKED:         {self.profile['vs_human']['skunked']}            MEDIUM LOSSES:        {self.profile['vs_computer']['medium_losses']}       ')
-        print(f'DOUBLE SKUNKS:   {self.profile['vs_human']['dbl_skunks']}            HARD WINS:          {self.profile['vs_computer']['hard_wins']}       ')
-        print(f'DOUBLE SKUNKED:  {self.profile['vs_human']['dbl_skunked']}            HARD LOSSES:        {self.profile['vs_computer']['hard_losses']}       ')
+        
 
     def add_badge(self, badge=None, difficulty=0):
         self.profile['badges'][badge] = difficulty  
 
 
-    def compute_new_rank(self, opponent_rank):
-        
-
-    def add_match(self, stats):
+    def add_credits(self):
+        pass
 
 
+    def unlock_board(self):
+        pass
 
-    def update_profile(self):
+
+    def compute_new_rank(self):
+        rank = self.profile[self.name]['rank']
+        outcome = 0
+        penalty = 0
+        bonus = 0
+        if rank < 1000:
+            weighted_gain = 100
+            weighted_loss = 50
+        elif rank < 2000:
+            weighted_gain = 75
+            weighted_loss = 50
+        elif rank < 3000:
+            weighted_gain = 50
+            weighted_loss = 50
+        else:
+            weighted_gain = 25
+            weighted_loss = 50
+        if self.match_stats['win'] == 1:
+            outcome += weighted_gain
+        else:
+            outcome -= weighted_loss
+        if self.match_stats['was_skunked'] == 1:
+            penalty = 50
+        elif self.match_stats['was_dbl_skunked'] == 1:
+            penalty = 100
+        elif self.match_stats['skunked_opponent'] == 1:
+            bonus = 50
+        elif self.match_stats['dbl_skunked_opponent'] == 1:
+            bonus = 100
+        return rank + outcome + bonus - penalty
+
+
+    def update_profile(self,game_mode): #game_mode argument must match the dictionary keys available
+        #stats to update: {'skunks':0,'skunked':0,'dbl_skunks':0,'dbl_skunked':0,'wins':0,'losses':0}
+        self.profile[self.name][game_mode]['skunks'] += self.match_stats['skunked_opponent']
+        self.profile[self.name][game_mode]['skunked'] += self.match_stats['was_skunked']
+        self.profile[self.name][game_mode]['dbl_skunks'] += self.match_stats['dbl_skunked_opponent']
+        self.profile[self.name][game_mode]['dbl_skunked'] += self.match_stats['was_dbl_skunked']
+        if self.match_stats['win'] == 1:
+            self.profile[self.name][game_mode]['wins'] += 1
+        else:
+            self.profile[self.name][game_mode]['losses'] += 1
+        self.profile[self.name]['rank'] = self.compute_new_rank()
+
+
+    def save_updated_profile(self):
         with open(f'{self.name}.json', 'w') as f:
             json.dump(self.profile, f)
 
+
+    def display_stats(self):
+        print(f'======== Player stats for {self.name} ========\n')
+        print(f'Rank:    {self.profile[self.name]['rank']}')
+        print(f'Credits: {self.profile[self.name]['credits']}')
+        print(f'Badges:  {self.profile[self.name]['badges']}')
+        print(f'Boards unlocked: {self.profile[self.name]['boards_unlocked']}')
+        print('============================================== \n')
+        print('               Versus Humans                   \n')
+        print(f'WINS:            {self.profile[self.name]['vs_humans']['wins']}')
+        print(f'LOSSES:          {self.profile[self.name]['vs_humans']['wins']}')
+        print(f'SKUNKS:          {self.profile[self.name]['vs_humans']['skunks']}')
+        print(f'SKUNKED:         {self.profile[self.name]['vs_humans']['skunked']}')
+        print(f'DOUBLE SKUNKS:   {self.profile[self.name]['vs_humans']['dbl_skunks']}')
+        print(f'DOUBLE SKUNKED:  {self.profile[self.name]['vs_humans']['dbl_skunked']}')
+        print('============================================== \n')
+        print('              Versus Computer                  \n')
+        print(f'EASY:   {self.profile[self.name]['computer_easy']}')
+        print(f'MEDIUM: {self.profile[self.name]['computer_med']}')
+        print(f'HARD:   {self.profile[self.name]['computer_hard']}')
