@@ -211,7 +211,7 @@ class Hand():
         return best_hand
 
 
-    def optimize_statistically(self):
+    def optimize_statistically(self, is_dealer=False):
         cards = self.hand.copy()
         hand_scores = {}
         possible_hands = combinations(cards,4)

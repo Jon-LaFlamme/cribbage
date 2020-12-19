@@ -4,6 +4,7 @@ from __future__ import print_function
 
 import names
 import random
+import hand
 
 class player():
     """Player
@@ -32,20 +33,8 @@ class player():
         self.score = 0
         self.is_human = True
         self.cards = []
-
-    def cut_deck(self,deck):
-        if self.is_human:
-            invalid = True
-            while invalid:
-                index = int(input(f'Select a number between 1 and {len(deck.deck)} to cut the deck: ')) - 1
-                if index in range(0,len(deck.deck)):
-                    invalid = False    
-                else:
-                    print('Invalid selection. Please try again.')
-        else:
-            index = random.randint(0,len(deck.deck)-1)
-        deck.cut(index)
         
+
     def display_hand(self,is_numbered):
         i = 0
         for card in self.cards:
@@ -55,22 +44,13 @@ class player():
             else:
                 print(f'|| {card.name} ')
 
-    def discard(self,num_discards):
-        if self.is_human:
-            return self.user_discard(num_discards)
-        else:
-            if self.difficulty == 'easy':
-                return self.auto_discard_easy(num_discards)
-            elif self.difficulty == 'intermediate':
-                return self.auto_discard_intermediate(num_discards)
-            else:
-                return self.auto_discard_difficult(num_discards)
 
     def update_score(self,num_points):
         if self.score + num_points > 121:
             self.score = 121
         else:
             self.score += num_points
+
 
 class human(player):
     """human
@@ -85,7 +65,22 @@ class human(player):
         if name:
             self.name = name
 
-    def user_discard(self,num_discards):
+
+    def cut_deck(self, deck, for_first_deal=False):
+        invalid = True
+        while invalid:
+            index = int(input(f'Select a number between 1 and {len(deck.deck)} to cut the deck: ')) - 1
+            if index in range(0,len(deck.deck)):
+                invalid = False    
+            else:
+                print('Invalid selection. Please try again.')
+        if for_first_deal:
+            return deck.pop(index)
+        else:
+            deck.cut(index)
+
+
+    def discard(self,num_discards):
         discards = []
         indices= []
         while len(discards) < num_discards:     #supports 2 and 3-4 player discard rules with num_discards parameter
@@ -102,6 +97,7 @@ class human(player):
             self.cards.remove(card)
         return discards
         
+
 class computer(player):
     """Player
 
@@ -118,7 +114,7 @@ class computer(player):
 
     def __init__(self, difficulty):
         super().__init__()
-        _difficulties = ['easy','intermediate','difficult']
+        _difficulties = ['easy','medium','hard']
         _gender = ['male','female']
         self.is_human = False
         self.name = f'{names.get_first_name(gender = random.choice(_gender))} (computer)'
@@ -127,21 +123,35 @@ class computer(player):
         else:
             self.difficulty = 'easy'
 
-    def auto_discard_easy(self,num_discards):
+
+    def cut_deck(self, deck, for_first_deal=False):
+        index = random.randint(0,len(deck.deck)-1)
+        if for_first_deal:
+            return deck.deck.pop(index)
+        else:
+            deck.cut(index)
+
+
+    def discard(self,num_discards, is_dealer=False):
         discards = []
-        while len(discards) < num_discards:
-            discards.append(self.cards.pop(random.randint(0,len(self.cards)-1)))
+        if self.difficulty == 'easy':
+            while len(discards) < num_discards:
+                discards.append(self.cards.pop(random.randint(0,len(self.cards)-1)))   
+        elif self.difficulty == 'medium':
+            h = hand.Hand(self.cards)
+            selects = h.optimize_by_points()
+            for card in self.cards:
+                if card not in selects:
+                    discards.append(card)
+                    self.cards.remove(card)
+        else:
+            h = hand.Hand(self.cards)
+            selects = h.optimize_statistically(is_dealer)
+            for card in self.cards:
+                if card not in selects:
+                    discards.append(card)
+                    self.cards.remove(card)
         return discards
-
-    def auto_discard_intermediate(self,num_discards):
-        #TODO(Jon) Develop intermediate selection algorithm. Till then redirect to easy
-        #Intermediate selection algorithm to find optimal points for each hand
-        return self.auto_discard_easy(num_discards)
-
-    def auto_discard_difficult(self,num_discards):
-        #TODO(Jon) Develop difficult selection algorithm. Till then redirect to easy
-        #difficult selection algorithm to employ statistical learning to find optimal discards
-        return self.auto_discard_easy(num_discards)
 
    
 
