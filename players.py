@@ -144,7 +144,7 @@ class computer(player):
                 if card not in selects:
                     discards.append(card)
                     self.cards.remove(card)
-        else:
+        elif self.difficulty == 'hard':
             h = hand.Hand(self.cards)
             selects = h.optimize_statistically(is_dealer)
             for card in self.cards:
