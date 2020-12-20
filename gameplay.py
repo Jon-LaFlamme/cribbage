@@ -7,43 +7,6 @@ import players
 import hand
 
 
-def sign_in():
-    invalid = True
-    while invalid:
-        print('\n ======== User Sign-In ======== \n')
-        print('1) Sign-in to an existing account.')
-        print('2) Create a new account.')
-        selection = int(input('Make a selection: '))
-        if selection == 1:
-            while invalid:
-                username = input('\nEnter your username: ')
-                email = input('Enter your email: ')
-                feedback = users.lookup_user(username,email)
-                if feedback == 'fna':
-                    print('email does not match username.')
-                    option = input('Enter 0 to return to menu. Any other key to try again:')
-                    if option == 0:
-                        break
-                if feedback == 'fa':
-                    u = users.User(username, email)
-                    print('Loading profile.')
-                    return u
-        elif selection == 2:
-            while invalid:
-                username = input('\nCreate a username: ')
-                email = input('Enter your email: ')
-                feedback = users.lookup_user(username,email)
-                if feedback == 'nf':
-                    users.add_user(username,email)
-                    u = users.User(username, email)
-                    print('User profile created.')
-                    return u  
-                else:
-                    print(f'username: {username} is already claimed. Please try again.') 
-        else:
-            print('Invalid selection. Please try again.')
-
-
 def main_menu():
     while True:
         print(' ========= Main Menu ======== \n')

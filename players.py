@@ -5,6 +5,7 @@ from __future__ import print_function
 import names
 import random
 import hand
+import users
 
 class player():
     """Player
@@ -29,9 +30,8 @@ class player():
 
     def __init__(self):
         self.name = 'DeLynn Colvert'
-        self.record = {"wins": 0, "losses": 0}
         self.score = 0
-        self.is_human = True
+        self.is_dealer = False
         self.cards = []
         
 
@@ -60,11 +60,14 @@ class human(player):
     Methods:
         self.user_discard(self,num_discards)                 -> ret discards poppedd from self.cards
     """
-    def __init__(self, name = None):
+    def __init__(self, name = None, user = None):
         super().__init__()
-        if name:
+        if user:
+            self.name = user.name
+            self.user = user
+        else:
             self.name = name
-
+            self.user = None
 
     def cut_deck(self, deck, for_first_deal=False):
         invalid = True
@@ -116,7 +119,6 @@ class computer(player):
         super().__init__()
         _difficulties = ['easy','medium','hard']
         _gender = ['male','female']
-        self.is_human = False
         self.name = f'{names.get_first_name(gender = random.choice(_gender))} (computer)'
         if difficulty in _difficulties:
             self.difficulty = difficulty
@@ -132,7 +134,7 @@ class computer(player):
             deck.cut(index)
 
 
-    def discard(self,num_discards, is_dealer=False):
+    def discard(self, num_discards, is_dealer=False):
         discards = []
         if self.difficulty == 'easy':
             while len(discards) < num_discards:
