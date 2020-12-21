@@ -28,12 +28,12 @@ class player():
 
     """
 
-    def __init__(self):
+    def __init__(self, lane=None):
         self.name = 'DeLynn Colvert'
         self.score = 0
         self.is_dealer = False
         self.cards = []
-        
+         
 
     def display_hand(self,is_numbered):
         i = 0
@@ -44,6 +44,12 @@ class player():
             else:
                 print(f'|| {card.name} ')
 
+    def can_peg(self, count):
+        for card in self.cards:
+            if card.value + count <= 31:
+                return True
+        else:
+            return False
 
     def update_score(self,num_points):
         if self.score + num_points > 121:
@@ -82,7 +88,6 @@ class human(player):
         else:
             deck.cut(index)
 
-
     def discard(self,num_discards):
         discards = []
         indices= []
@@ -99,6 +104,16 @@ class human(player):
         for card in discards:
             self.cards.remove(card)
         return discards
+
+    def peg_one(self, count):
+        invalid = True
+        while invalid:
+            self.display_hand(is_numbered=True)
+            index = int(input(f'Select a card to peg {len(self.cards)}')) - 1
+            if index in range(0, len(self.cards)) and self.cards[index] + count <= 31:
+                return self.cards[index]
+            else:
+                print('Invalid selection. Please try again.')
         
 
 class computer(player):
@@ -133,6 +148,9 @@ class computer(player):
         else:
             deck.cut(index)
 
+    def peg_one(self, stack, count):
+        h = hand.Hand(self.cards)
+        return h.peg_selection(stack, count)
 
     def discard(self, num_discards, is_dealer=False):
         discards = []

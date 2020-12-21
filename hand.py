@@ -242,7 +242,7 @@ class Hand():
         return self.hand[0]
 
 
-    def peg_selection(self,stack,count,turncard):
+    def peg_selection(self, stack, count, turncard=None):
         #route to lead-off method if count is zero
         if count == 0:
             return self.peg_selection_lead(turncard)
@@ -274,6 +274,33 @@ class Hand():
             if card.value + count < 31:
                 return card
 
+    def determine_peg_points(self, count):
+        points = 0
+        #points for 15 or 31
+        if len(self.hand) > 1:
+            if count == 15 or count ==  31:
+                points += 2
+            #check for runs by working backward
+            if len(self.hand) > 2:
+                i = 3
+                max_run_points = 0
+                while i <= len(self.hand):
+                    substack = Hand(self.hand[-i:])
+                    run_points = substack.points_from_runs()
+                    if run_points > 0:
+                        max_run_points = run_points
+                    else:
+                        break
+                    i += 1
+                points += max_run_points
+            #check for pairs
+            if self.hand[-1].rank == self.hand[-2].rank:
+                points += 2
+                if len(self.hand) > 2 and self.hand[-2].rank == self.hand[-3].rank:
+                    points += 6
+                    if len(self.hand) > 3 and self.hand[-3].rank == self.hand[-4].rank:
+                        points += 12   
+        return points
 
                         
 
