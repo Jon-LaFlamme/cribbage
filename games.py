@@ -9,6 +9,7 @@ class Cribbage():
 
     def __init__(self, game_mode, player_one, player_two, board, deck):
         self.game_mode = game_mode      #self.game_mode = 'vs_human', 'computer_easy', 'computer_med', 'computer_hard'
+        self.game_not_over = True
         self.player_one = player_one    #players.Player() object
         self.player_two = player_two
         self.board = board              #board.Board() object
@@ -20,12 +21,11 @@ class Cribbage():
     
 
     def update_board(self):
-        if self.player_one.score >= 121 or self.player_two.score >= 121 :
+        if self.player_one.score >= 121 or self.player_two.score >= 121:
             self.end_sequence()
         else: 
             self.board.update_pegs()
         
-
     def determine_dealer_sequence(self):
         #lower cut wins the deal
         undetermined = True
@@ -44,7 +44,7 @@ class Cribbage():
             self.deck.deck.append(card_2)
             
     def deal_sequence(self):
-        if self.dealer == self.player_one:
+        if self.player_one.is_dealer:
             for i in range(6):
                 self.player_one.cards.append(self.deck.deal_one())
                 self.player_two.cards.append(self.deck.deal_one())
@@ -63,10 +63,12 @@ class Cribbage():
             self.turncard = self.player_two.cut_deck(self.deck)
             if self.turncard.rankname == 'jack':
                 self.player_one.score += 2
+                self.update_board()
         else:
             self.turncard = self.player_one.cut_deck(self.deck)
             if self.turncard.rankname == 'jack':
                 self.player_two.score += 2
+                self.update_board()
 
 
     def peg_sequence(self):
@@ -88,13 +90,19 @@ class Cribbage():
                     stack.hand.append(selected)
                     self.peg_count += selected.value
                     self.player_one.score += stack.determine_peg_points(self.peg_count)
+                    self.update_board()
                     p1_played_last = True
+                    if not self.game_not_over:
+                        break
                 if self.player_two.can_peg(self.peg_count):
                     selected = self.player_two.peg_one(self.peg_count)
                     self.player_two.cards.remove(selected)
                     stack.hand.append(selected)
                     self.peg_count += selected.value
                     self.player_two.score += stack.determine_peg_points(self.peg_count)
+                    self.update_board():
+                    if not self.game_not_over:
+                        break
                     p1_played_last = False
                 else:
                     is_p1_turn = True
@@ -103,6 +111,8 @@ class Cribbage():
                     self.player_one.score += 1
                 else:
                     self.player_two.score += 1
+            if not self.game_not_over:
+                break
         self.player_one.cards = hand1
         self.player_two.cards = hand2
 
@@ -116,13 +126,18 @@ class Cribbage():
         cr_pts = cr.compute_score()
 
         if self.player_one.is_dealer:
-           self.player_two.score +=  h2_pts
-           self.player_one.score += h1_pts
-           self.player_one.score += cr_pts
+            self.player_two.score +=  h2_pts
+            if self.game_not_over:
+                self.player_one.score += h1_pts
+            if self.game_not_over:
+                self.player_one.score += cr_pts
         else:
             self.player_one.score += h1_pts
-            self.player_two.score +=  h2_pts
-            self.player_two.score += cr_pts
+            if self.game_not_over:
+                self.player_two.score +=  h2_pts
+            if self.game_not_over:
+                self.player_two.score += cr_pts
+
 
     def cleanup(self):
         self.deck.append(self.turncard)
@@ -151,15 +166,28 @@ class Cribbage():
             elif self.player_one.score < 91:
                 self.player_two.user.game_stats['skunked_opponent'] += 1
                 self.player_one.user.game_stats['was_skunked'] += 1
-
+        #update user stats
         self.player_one.user.update_profile(self.game_mode)
         self.player_two.user.update_profile(self.game_mode)
         self.player_one.user.save_profile()
         self.player_two.user.save_profile()
+        #end the game
+        self.game_not_over = False
 
 
     def game_driver(self):    
         #TODO(Jon) Put everything together in a while loop
+        self.determine_dealer_sequence()
+        while self.game_not_over:
+            self.deal_sequence()
+            self.discard_sequence()
+            self.turncard_sequence()
+            if self.game_not_over:
+                self.peg_sequence()
+            if self.game_not_over:
+                self.show_sequence()
+            if self.game_not_over:
+                self.cleanup()
 
 
 class Ultimate(Cribbage):
