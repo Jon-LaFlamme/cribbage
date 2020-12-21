@@ -144,7 +144,7 @@ class User():
         return rank + outcome + bonus - penalty
 
 
-    def update_profile(self,game_mode): #game_mode argument must match the dictionary keys available
+    def update_profile(self, game_mode): #game_mode argument must match the dictionary keys available
         #stats to update: {'skunks':0,'skunked':0,'dbl_skunks':0,'dbl_skunked':0,'wins':0,'losses':0}
         self.profile[self.name][game_mode]['skunks'] += self.match_stats['skunked_opponent']
         self.profile[self.name][game_mode]['skunked'] += self.match_stats['was_skunked']

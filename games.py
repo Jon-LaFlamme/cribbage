@@ -7,7 +7,8 @@ import deck
 
 class Cribbage():
 
-    def __init__(self, player_one, player_two, board, deck):
+    def __init__(self, game_mode, player_one, player_two, board, deck):
+        self.game_mode = game_mode      #self.game_mode = 'vs_human', 'computer_easy', 'computer_med', 'computer_hard'
         self.player_one = player_one    #players.Player() object
         self.player_two = player_two
         self.board = board              #board.Board() object
@@ -131,7 +132,31 @@ class Cribbage():
         self.deck.shuffle()
         
     def end_sequence(self):
-        #TODO(Jon) There is a winner. Exit the game
+        # MATCH_TEMPLATE = {'win': 0, 'was_skunked': 0, 'was_dbl_skunked': 0, 'skunked_opponent': 0, 'dbl_skunked_oppenent': 0}
+        if self.player_one.score >= 121:
+            print(f'{self.player_one.name} wins!')
+            self.player_one.user.game_stats['win'] += 1
+            if self.player_two.score < 61:
+                self.player_one.user.game_stats['dbl_skunked_opponent'] += 1
+                self.player_two.user.game_stats['was_dbl_skunked'] += 1
+            elif self.player_two.score < 91:
+                self.player_one.user.game_stats['skunked_opponent'] += 1
+                self.player_two.user.game_stats['was_skunked'] += 1
+        else:
+            print(f'{self.player_two.name} wins!')
+            self.player_two.user.game_stats['win'] += 1
+            if self.player_one.score < 61:
+                self.player_two.user.game_stats['dbl_skunked_opponent'] += 1
+                self.player_one.user.game_stats['was_dbl_skunked'] += 1
+            elif self.player_one.score < 91:
+                self.player_two.user.game_stats['skunked_opponent'] += 1
+                self.player_one.user.game_stats['was_skunked'] += 1
+
+        self.player_one.user.update_profile(self.game_mode)
+        self.player_two.user.update_profile(self.game_mode)
+        self.player_one.user.save_profile()
+        self.player_two.user.save_profile()
+
 
     def game_driver(self):    
         #TODO(Jon) Put everything together in a while loop
