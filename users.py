@@ -1,8 +1,13 @@
 #TODO(Jon) This module will require online components for production, but will be locally implemented in this package
 import os
+import json
 
-MATCH_TEMPLATE = {'win': 0, 'was_skunked': 0, 'was_dbl_sunked': 0, 'skunked_opponent': 0, 'dbl_skunked_oppenent': 0}
-
+MATCH_TEMPLATE = {'win': 0, 'was_skunked': 0, 'was_dbl_skunked': 0, 'skunked_opponent': 0, 'dbl_skunked_opponent': 0}
+DIFFICULTY_MAP = {'beginner': 1, 'intermediate': 2, 'expert': 3}
+GAME_MODES = {'vs_humans','computer_easy','computer_med','computer_hard'}
+BADGES = {'win_streak_3','hand_of_eight','hand_of_twelve','hand_of_sixteen','hand_of_twenty',
+                 'hand_of_twenty-four','hand_of_twenty-eight','hand_of_twenty-nine','peg_five',
+                 'peg_eight','peg_twelve','three_skunks','three_dbl_skunks','rank_status'}
 PROFILE_TEMPLATE = {'email': 'none',
                     'rank': 0,
                     'credits': 0,
@@ -27,7 +32,7 @@ PROFILE_TEMPLATE = {'email': 'none',
                     'computer_hard': {'skunks':0,'skunked':0,'dbl_skunks':0,'dbl_skunked':0,'wins':0,'losses':0}
                     }
 
-
+#returns the new or existing user after successfull sign-in or new profile created
 def sign_in():
     invalid = True
     while invalid:
@@ -39,24 +44,24 @@ def sign_in():
             while invalid:
                 username = input('\nEnter your username: ')
                 email = input('Enter your email: ')
-                feedback = users.lookup_user(username,email)
+                feedback = lookup_user(username,email)
                 if feedback == 'fna':
                     print('email does not match username.')
                     option = input('Enter 0 to return to menu. Any other key to try again:')
                     if option == 0:
                         break
                 if feedback == 'fa':
-                    u = users.User(username, email)
+                    u = User(username, email)
                     print('Loading profile.')
                     return u
         elif selection == 2:
             while invalid:
                 username = input('\nCreate a username: ')
                 email = input('Enter your email: ')
-                feedback = users.lookup_user(username,email)
+                feedback = lookup_user(username,email)
                 if feedback == 'nf':
-                    users.add_user(username,email)
-                    u = users.User(username, email)
+                    add_user(username, email)
+                    u = User(username, email)
                     print('User profile created.')
                     return u  
                 else:
@@ -96,20 +101,33 @@ class User():
                 self.profile = json.load(f)
         else:
             self.profile = {username: PROFILE_TEMPLATE}
+            self.profile[username]['email'] = email
             with open(f'{self.name}.json', 'w') as f:
-                f.write(self.profile)
+                json.dump(self.profile, f)
         
 
-    def add_badge(self, badge=None, difficulty=0):
-        self.profile['badges'][badge] = difficulty  
+    def add_badge(self, badge=None, difficulty=None):
+        if badge in BADGES and difficulty in DIFFICULTY_MAP:
+            self.profile[self.name]['badges'][badge] = DIFFICULTY_MAP[difficulty]  
 
-
-    def add_credits(self):
+    def new_credits_calculator(self):
+        #TODO(Jon) Create function that calculates the new credits awarded a user after achieving various tasks. Done once per game at end.
+        #Requires a credits dictionary mapping credit value for various achievements
+        #In-app purchases can also purchase credits 
         pass
 
+    def add_credits(self, credits):
+        self.profile[self.name]['credits'] += credits
 
-    def unlock_board(self):
-        pass
+
+    def update_unlocked_boards(self, board, difficulty):
+        if difficulty in DIFFICULTY_MAP:
+            value = DIFFICULTY_MAP[difficulty]
+        if board in self.profile[self.name]['unlocked_boards']:
+            #Only overwrite old scores if achieved at a greater difficulty level
+            if value > self.profile[self.name]['unlocked_boards'][board]:
+                self.profile[self.name]['unlocked_boards'][board] = value
+        else: self.profile[self.name]['unlocked_boards'][board] = value
 
 
     def compute_new_rank(self):
@@ -144,17 +162,18 @@ class User():
         return rank + outcome + bonus - penalty
 
 
-    def update_profile(self, game_mode): #game_mode argument must match the dictionary keys available
-        #stats to update: {'skunks':0,'skunked':0,'dbl_skunks':0,'dbl_skunked':0,'wins':0,'losses':0}
-        self.profile[self.name][game_mode]['skunks'] += self.match_stats['skunked_opponent']
-        self.profile[self.name][game_mode]['skunked'] += self.match_stats['was_skunked']
-        self.profile[self.name][game_mode]['dbl_skunks'] += self.match_stats['dbl_skunked_opponent']
-        self.profile[self.name][game_mode]['dbl_skunked'] += self.match_stats['was_dbl_skunked']
-        if self.match_stats['win'] == 1:
-            self.profile[self.name][game_mode]['wins'] += 1
-        else:
-            self.profile[self.name][game_mode]['losses'] += 1
-        self.profile[self.name]['rank'] = self.compute_new_rank()
+    def update_profile(self, game_mode=None):
+        if game_mode in GAME_MODES:
+            #stats to update: {'skunks':0,'skunked':0,'dbl_skunks':0,'dbl_skunked':0,'wins':0,'losses':0}
+            self.profile[self.name][game_mode]['skunks'] += self.match_stats['skunked_opponent']
+            self.profile[self.name][game_mode]['skunked'] += self.match_stats['was_skunked']
+            self.profile[self.name][game_mode]['dbl_skunks'] += self.match_stats['dbl_skunked_opponent']
+            self.profile[self.name][game_mode]['dbl_skunked'] += self.match_stats['was_dbl_skunked']
+            if self.match_stats['win'] == 1:
+                self.profile[self.name][game_mode]['wins'] += 1
+            else:
+                self.profile[self.name][game_mode]['losses'] += 1
+            self.profile[self.name]['rank'] = self.compute_new_rank()
 
 
     def save_updated_profile(self):
@@ -163,21 +182,36 @@ class User():
 
 
     def display_stats(self):
+
+        rank = self.profile[self.name]['rank']
+        credits = self.profile[self.name]['credits']
+        badges = self.profile[self.name]['badges']
+        boards = self.profile[self.name]['unlocked_boards']
+        wins = self.profile[self.name]['vs_humans']['wins']
+        losses = self.profile[self.name]['vs_humans']['wins']
+        skunks = self.profile[self.name]['vs_humans']['skunks']
+        skunked = self.profile[self.name]['vs_humans']['skunked']
+        dbl_skunks = self.profile[self.name]['vs_humans']['dbl_skunks']
+        dbl_skunked = self.profile[self.name]['vs_humans']['dbl_skunked']
+        easy = self.profile[self.name]['computer_easy']
+        medium = self.profile[self.name]['computer_med']
+        hard = self.profile[self.name]['computer_hard']
+
         print(f'======== Player stats for {self.name} ========\n')
-        print(f'Rank:    {self.profile[self.name]['rank']}')
-        print(f'Credits: {self.profile[self.name]['credits']}')
-        print(f'Badges:  {self.profile[self.name]['badges']}')
-        print(f'Boards unlocked: {self.profile[self.name]['boards_unlocked']}')
+        print(f'Rank:    {rank}')
+        print(f'Credits: {credits}')
+        print(f'Badges:  {badges}')
+        print(f'Boards unlocked: {boards}')
         print('============================================== \n')
         print('               Versus Humans                   \n')
-        print(f'WINS:            {self.profile[self.name]['vs_humans']['wins']}')
-        print(f'LOSSES:          {self.profile[self.name]['vs_humans']['wins']}')
-        print(f'SKUNKS:          {self.profile[self.name]['vs_humans']['skunks']}')
-        print(f'SKUNKED:         {self.profile[self.name]['vs_humans']['skunked']}')
-        print(f'DOUBLE SKUNKS:   {self.profile[self.name]['vs_humans']['dbl_skunks']}')
-        print(f'DOUBLE SKUNKED:  {self.profile[self.name]['vs_humans']['dbl_skunked']}')
+        print(f'WINS:            {wins}')
+        print(f'LOSSES:          {losses}')
+        print(f'SKUNKS:          {skunks}')
+        print(f'SKUNKED:         {skunked}')
+        print(f'DOUBLE SKUNKS:   {dbl_skunks}')
+        print(f'DOUBLE SKUNKED:  {dbl_skunked}')
         print('============================================== \n')
         print('              Versus Computer                  \n')
-        print(f'EASY:   {self.profile[self.name]['computer_easy']}')
-        print(f'MEDIUM: {self.profile[self.name]['computer_med']}')
-        print(f'HARD:   {self.profile[self.name]['computer_hard']}')
+        print(f'BEGINNER:   {easy}')
+        print(f'INTERMEDIATE: {medium}')
+        print(f'EXPERT:   {hard}')

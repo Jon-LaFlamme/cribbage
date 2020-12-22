@@ -7,7 +7,7 @@ import random
 import hand
 import users
 
-class player():
+class Player():
     """Player
 
     Attributes:
@@ -58,7 +58,7 @@ class player():
             self.score += num_points
 
 
-class human(player):
+class Human(Player):
     """human
     Attributes:
         self.name set with string argument
@@ -116,7 +116,7 @@ class human(player):
                 print('Invalid selection. Please try again.')
         
 
-class computer(player):
+class Computer(Player):
     """Player
 
     Methods:

@@ -1,3 +1,6 @@
+import players
+import users
+
 
 class Board():
 
@@ -28,8 +31,8 @@ class Board():
 
 class Classic(Board):
 
-    def __init__(self, player_one, player_two):
-        super().__init__(player_one, player_two)
+    def __init__(self):
+        super().__init__()
         self.mapper = {'0':1,'1':3,'2':4,'3':5,'4':6,'5':7,'6':9,'7':10,'8':11,'9':12,'10':13,
                         '11':15,'12':16,'13':17,'14':18,'15':19,'16':21,'17':22,'18':23,'19':24,'20':25,
                         '21':27,'22':28,'23':29,'24':30,'25':31,'26':33,'27':34,'28':35,'29':36,'30':37}
@@ -90,8 +93,8 @@ class Classic(Board):
                 new_col = 7
         #determine lane 2 positions: out: 31, back 28
         elif vacant != self.lane2_hind_peg:
-                        old_row = self.mapper[str(vacant)]
-            new_row = self.mapper[str(self.lane1_lead_peg)]
+            old_row = self.mapper[str(vacant)]
+            new_row = self.mapper[str(self.lane2_lead_peg)]
             if vacant in range(0,30) or vacant in range(60,122):
                 old_col = 31
             else:

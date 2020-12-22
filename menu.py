@@ -1,10 +1,9 @@
-#TODO(Jon) This module is for managing all gameplay sequences
-
 import users
 import deck
 import board
 import players
 import hand
+import game
 
 
 def main_menu():
@@ -58,7 +57,7 @@ def select_difficulty():
 
 
 def select_board(mode):
-    if mode == 1:
+    if mode == 1 or mode == 2:
         return 'classic_1'
     else:
         return 'classic_1'
@@ -117,59 +116,6 @@ def play_classic(user, settings):
     d.shuffle()
     b = board.Classic(p1.name,p2.name)
     print(f'\n    {p1.name}   vs   {p2.name}     \n')
-
-    #TODO(Jon)  Split this into a sequence/procedure
-    print('\n -------- Cutting for first deal ---------\n')
-    while True:
-        c1 = p1.cut_deck(d,for_first_deal=True)
-        c2 = p2.cut_deck(d, for_first_deal=True)
-        print(f'{p1.name} cuts a {c1.name}.')
-        print(f'{p2.name} cuts a {c2.name}.')
-
-        if c1.rank < c2.rank:
-            is_p1_dealer = True
-            print(f'{p1.name} wins first deal.')
-            break
-        elif c2.rank < c1.rank:
-            is_p1_dealer = False
-            print(f'{p2.name} wins first deal.')
-            break
-        else:
-            d.deck.append(c1)
-            d.deck.append(c2)
-            print('Tie! Cut again.')
-    d.deck.append(c1)
-    d.deck.append(c2)
-
-    #Game Control Flow
-    while p1.score < 121 and p2.score < 121:
-        b.display_board()
-        d.shuffle()
-
-        #TODO(Jon) split this off into a separate sequences
-        #Round Setup: Deal; Discard to crib; cut for turncard
-        print('Dealing ...')
-        for i in range(6):
-            p1.cards.append(d.deal_one())
-            p2.cards.append(d.deal_one())
-        p1_discards = p1.discard(2)
-        p2_discards = p2.discard(2)
-        crib = p1_discards.extends(p2_discards)
-        if is_p1_dealer:
-            p1.cut_deck(d)
-        else:
-            p1.cut_deck(d)
-        turncard = d.deal_one()
-
-        #TODO(Jon) split this off into a separate sequence 
-        #Pegging Sequence
-
-
-        #TODO(Jon)
-
-
-
-
 
 
 
