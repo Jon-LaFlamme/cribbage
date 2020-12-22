@@ -28,14 +28,13 @@ class Player():
 
     """
 
-    def __init__(self, lane=None):
+    def __init__(self):
         self.name = 'DeLynn Colvert'
         self.score = 0
         self.is_dealer = False
         self.cards = []
          
-
-    def display_hand(self,is_numbered):
+    def display_hand(self, is_numbered=False):
         i = 0
         for card in self.cards:
             if is_numbered:
@@ -51,11 +50,6 @@ class Player():
         else:
             return False
 
-    def update_score(self,num_points):
-        if self.score + num_points > 121:
-            self.score = 121
-        else:
-            self.score += num_points
 
 
 class Human(Player):
@@ -66,7 +60,7 @@ class Human(Player):
     Methods:
         self.user_discard(self,num_discards)                 -> ret discards poppedd from self.cards
     """
-    def __init__(self, name = None, user = None):
+    def __init__(self, name = None, user = None, lane=None):
         super().__init__()
         if user:
             self.name = user.name
@@ -130,7 +124,7 @@ class Computer(Player):
         self.peg(self)                          
     """
 
-    def __init__(self, difficulty):
+    def __init__(self, difficulty, lane=None):
         super().__init__()
         _difficulties = ['easy','medium','hard']
         _gender = ['male','female']
