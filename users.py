@@ -198,9 +198,9 @@ class User():
         hard = self.profile[self.name]['computer_hard']
 
         print(f'======== Player stats for {self.name} ========\n')
-        print(f'Rank:    {rank}')
-        print(f'Credits: {credits}')
-        print(f'Badges:  {badges}')
+        print(f'Rank:            {rank}')
+        print(f'Credits:         {credits}')
+        print(f'Badges:          {badges}')
         print(f'Boards unlocked: {boards}')
         print('============================================== \n')
         print('               Versus Humans                   \n')
@@ -212,6 +212,6 @@ class User():
         print(f'DOUBLE SKUNKED:  {dbl_skunked}')
         print('============================================== \n')
         print('              Versus Computer                  \n')
-        print(f'BEGINNER:   {easy}')
-        print(f'INTERMEDIATE: {medium}')
-        print(f'EXPERT:   {hard}')
+        print(f'BEGINNER:       {easy}')
+        print(f'INTERMEDIATE:   {medium}')
+        print(f'EXPERT:         {hard}')
