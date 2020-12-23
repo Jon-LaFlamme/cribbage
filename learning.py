@@ -10,9 +10,9 @@ import random
 
 
 
-ranks = {'ace':1,'two':2,'three':3,'four':4,'five':5,'six':6,'seven':7,'eight':8,
+RANKS = {'ace':1,'two':2,'three':3,'four':4,'five':5,'six':6,'seven':7,'eight':8,
     'nine':9,'ten':10,'jack':11,'queen':12,'king':13}
-suits = ['clubs','diamonds','hearts','spades']
+SUITS = ['clubs','diamonds','hearts','spades']
 
 performance_by_hand = {}    
 #template: {"hand_id": 
@@ -37,19 +37,19 @@ pegging_performance = {}
 # First map a value from 1-52 for each card in the deck. (eg {'acc':1,'acd':2,'ach':3,'acs':4,'twc':5, ....})
 
 
-def hand_id_mapper(suits,ranks):
+def hand_id_mapper(suits=None, ranks=None):
     deck_rank = 0
     id_ranks = {}
-    for rank in ranks.keys():
-        for suit in suits:
+    for rank in RANKS.keys():
+        for suit in SUITS:
             deck_rank += 1
             id_ranks[f'{rank[:2]}{suit[0]}'] = deck_rank
     return id_ranks
 
 #To compress posssibilities, 5 unique suit combinations are represented:
 # 4d = 4 different suits; 3d = 3 different suits; 3s = 3 same suit; 2s = 2 of each; 4s = 4 same suit
-def hand_suit_signature(a_hand):
-    h = hand.Hand(a_hand)
+def hand_suit_signature(cards=None):
+    h = hand.Hand(list_of_cards=cards)
     composition = []
     for key,value in h.suits.items():  
         composition.append(value)
@@ -70,31 +70,31 @@ def hand_suit_signature(a_hand):
 
 # This function takes a hand as input and based on id_ranks, creates and returns a correcly oredered unique hand id as a string
 # This resolves the issue of redundant permutations of the same combination of cards in a hand
-def hand_id(hand):
-    signature = hand_suit_signature(hand)
-    id_ranks = hand_id_mapper(suits,ranks)
+def hand_id(cards=None):
+    signature = hand_suit_signature(cards=cards)
+    id_ranks = hand_id_mapper(suits=SUITS, ranks=RANKS)
     ids = {}
     ordered_hand_id = []
-    for card in hand:
+    for card in cards:
         ids[f'{card.name[:2]}{card.suit[0]}'] = id_ranks[f'{card.name[:2]}{card.suit[0]}']
     ordered_hand_id = sorted(ids.items(), key=lambda x: x[1], reverse=True) 
     return f'{ordered_hand_id[0][0][:2]}{ordered_hand_id[1][0][:2]}{ordered_hand_id[2][0][:2]}{ordered_hand_id[3][0][:2]}{signature}'
 
 
 #strategy is one of maximization of points and is blind to other bot's cards with zero statistical adjustments
-def peg_logic(hand_playing,stack,count,turncard):
-    h = hand.Hand(hand_playing,turncard)
-    return h.peg_selection(stack,count,turncard)
+def peg_logic(hand_playing=None, stack=None, count=None, turncard=None):
+    h = hand.Hand(list_of_cards=hand_playing, turncard=turncard)
+    return h.peg_selection(stack=stack, count=count, turncard=turncard)
 
 
-def can_play(hand,count):
+def can_play(hand=None, count=None):
     for card in hand:
         if card.value + count <= 31:
             return True
     return False
 
 
-def determine_peg_points(stack,count):
+def determine_peg_points(stack=None, count=None):
     points = 0
     h = stack.copy()
     #points for 15 or 31

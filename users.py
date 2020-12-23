@@ -27,9 +27,9 @@ PROFILE_TEMPLATE = {'email': 'none',
                             'rank_status': 0,},     #0: beginner,  #1: intermediate,  #2: advanced,  #3: elite
                     'unlocked_boards': {'classic_1': 0,'ultimate_1': 0},  #0: not won, #1 won on easy, #2 won on medium, #3 won on hard   
                     'vs_humans': {'skunks':0,'skunked':0,'dbl_skunks':0,'dbl_skunked':0,'wins':0,'losses':0},
-                    'computer_easy': {'skunks':0,'skunked':0,'dbl_skunks':0,'dbl_skunked':0,'wins':0,'losses':0},
-                    'computer_med': {'skunks':0,'skunked':0,'dbl_skunks':0,'dbl_skunked':0,'wins':0,'losses':0},
-                    'computer_hard': {'skunks':0,'skunked':0,'dbl_skunks':0,'dbl_skunked':0,'wins':0,'losses':0}
+                    'computer_beginner': {'skunks':0,'skunked':0,'dbl_skunks':0,'dbl_skunked':0,'wins':0,'losses':0},
+                    'computer_intermediate': {'skunks':0,'skunked':0,'dbl_skunks':0,'dbl_skunked':0,'wins':0,'losses':0},
+                    'computer_expert': {'skunks':0,'skunked':0,'dbl_skunks':0,'dbl_skunked':0,'wins':0,'losses':0}
                     }
 
 #returns the new or existing user after successfull sign-in or new profile created
@@ -44,24 +44,24 @@ def sign_in():
             while invalid:
                 username = input('\nEnter your username: ')
                 email = input('Enter your email: ')
-                feedback = lookup_user(username,email)
+                feedback = lookup_user(username=username, email=email)
                 if feedback == 'fna':
                     print('email does not match username.')
                     option = input('Enter 0 to return to menu. Any other key to try again:')
                     if option == 0:
                         break
                 if feedback == 'fa':
-                    u = User(username, email)
+                    u = User(username=username, email=email)
                     print('Loading profile.')
                     return u
         elif selection == 2:
             while invalid:
                 username = input('\nCreate a username: ')
                 email = input('Enter your email: ')
-                feedback = lookup_user(username,email)
+                feedback = lookup_user(username=username, email=email)
                 if feedback == 'nf':
-                    add_user(username, email)
-                    u = User(username, email)
+                    add_user(username=username, email=email)
+                    u = User(username=username, email=email)
                     print('User profile created.')
                     return u  
                 else:
@@ -71,7 +71,7 @@ def sign_in():
 
 
 #Found but not authenticated: 'fna',  Found and authenticated: 'fa',  Not found: 'nf'
-def lookup_user(username, email):
+def lookup_user(username=None, email=None):
     with open('user_directory.json','r') as f:
         user_directory = json.load(f)
         if username in user_directory:
@@ -83,7 +83,7 @@ def lookup_user(username, email):
             return 'nf'
 
 
-def add_user(username, email):
+def add_user(username=None, email=None):
     with open('user_directory.json','r') as f:
         user_directory = json.load(f)
     user_directory[username] = {'email': email, 'rank': 0} 
@@ -93,7 +93,7 @@ def add_user(username, email):
 
 class User():
 
-    def __init__(self, username, email):
+    def __init__(self, username=None, email=None):
         self.name = username
         self.match_stats = MATCH_TEMPLATE
         if os.path.exists(f'{self.name}.json'):
@@ -116,11 +116,11 @@ class User():
         #In-app purchases can also purchase credits 
         pass
 
-    def add_credits(self, credits):
+    def add_credits(self, credits=None):
         self.profile[self.name]['credits'] += credits
 
 
-    def update_unlocked_boards(self, board, difficulty):
+    def update_unlocked_boards(self, board=None, difficulty=None):
         if difficulty in DIFFICULTY_MAP:
             value = DIFFICULTY_MAP[difficulty]
         if board in self.profile[self.name]['unlocked_boards']:

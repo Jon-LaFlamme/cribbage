@@ -5,7 +5,7 @@ import users
 class Board():
 
 
-    def __init__(self, player_one, player_two):
+    def __init__(self, player_one=None, player_two=None):
         self.player_one = player_one
         self.player_two = player_two
         self.lane1_lead_peg = 0
@@ -19,12 +19,12 @@ class Board():
             vacant = self.lane1_hind_peg
             self.lane1_hind_peg = self.lane1_lead_peg
             self.lane1_lead_peg = self.player_one.score
-            self.update_board(vacant, lane=1)
+            self.update_board(vacant=vacant, lane=1)
         elif self.lane2_lead_peg != self.player_two.score:
             vacant = self.lane2_hind_peg
             self.lane2_hind_peg = self.lane2_lead_peg
             self.lane2_lead_peg = self.player_two.score
-            self.update_board(vacant, lane=2)
+            self.update_board(vacant=vacant, lane=2)
 
 
     def display_board(self):
@@ -32,8 +32,8 @@ class Board():
 
 class Classic(Board):
 
-    def __init__(self, player_one, player_two):
-        super().__init__(player_one, player_two)
+    def __init__(self, player_one=None, player_two=None):
+        super().__init__(player_one=None, player_two=None)
         self.mapper = {'0':1,'1':3,'2':4,'3':5,'4':6,'5':7,'6':9,'7':10,'8':11,'9':12,'10':13,
                         '11':15,'12':16,'13':17,'14':18,'15':19,'16':21,'17':22,'18':23,'19':24,'20':25,
                         '21':27,'22':28,'23':29,'24':30,'25':31,'26':33,'27':34,'28':35,'29':36,'30':37,
@@ -90,7 +90,7 @@ class Classic(Board):
     
 
 
-    def update_board(self, vacant, lane=None):
+    def update_board(self, vacant=None, lane=None):
         #determine Lane 1 positions: out: 4, back: 7
         if lane == 1:
             old_row = self.mapper[str(vacant)]

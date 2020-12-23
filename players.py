@@ -43,7 +43,7 @@ class Player():
             else:
                 print(f'|| {card.name} ')
 
-    def can_peg(self, count):
+    def can_peg(self, count=None):
         for card in self.cards:
             if card.value + count <= 31:
                 return True
@@ -60,7 +60,7 @@ class Human(Player):
     Methods:
         self.user_discard(self,num_discards)                 -> ret discards poppedd from self.cards
     """
-    def __init__(self, name = None, user = None, lane=None):
+    def __init__(self, name=None, user=None):
         super().__init__()
         if user:
             self.name = user.name
@@ -69,7 +69,7 @@ class Human(Player):
             self.name = name
             self.user = None
 
-    def cut_deck(self, deck, for_first_deal=False):
+    def cut_deck(self, deck=None, for_first_deal=False):
         invalid = True
         while invalid:
             index = int(input(f'Select a number between 1 and {len(deck.deck)} to cut the deck: ')) - 1
@@ -82,7 +82,7 @@ class Human(Player):
         else:
             deck.cut(index)
 
-    def discard(self,num_discards):
+    def discard(self, num_discards=None):
         discards = []
         indices= []
         while len(discards) < num_discards:     #supports 2 and 3-4 player discard rules with num_discards parameter
@@ -99,7 +99,7 @@ class Human(Player):
             self.cards.remove(card)
         return discards
 
-    def peg_one(self, count):
+    def peg_one(self, count=None):
         invalid = True
         while invalid:
             self.display_hand(is_numbered=True)
@@ -124,29 +124,29 @@ class Computer(Player):
         self.peg(self)                          
     """
 
-    def __init__(self, difficulty, lane=None):
+    def __init__(self, difficulty='easy', lane=None):
         super().__init__()
         _difficulties = ['easy','medium','hard']
         _gender = ['male','female']
-        self.name = f'{names.get_first_name(gender = random.choice(_gender))} (computer)'
+        self.name = f'{names.get_first_name(gender=random.choice(_gender))} (computer)'
         if difficulty in _difficulties:
             self.difficulty = difficulty
         else:
             self.difficulty = 'easy'
 
 
-    def cut_deck(self, deck, for_first_deal=False):
+    def cut_deck(self, deck=None, for_first_deal=False):
         index = random.randint(0,len(deck.deck)-1)
         if for_first_deal:
             return deck.deck.pop(index)
         else:
             deck.cut(index)
 
-    def peg_one(self, stack, count):
+    def peg_one(self, stack=[], count=None, turncard=None):
         h = hand.Hand(self.cards)
-        return h.peg_selection(stack, count)
+        return h.peg_selection(stack=stack, count=count, turncard=turncard)
 
-    def discard(self, num_discards, is_dealer=False):
+    def discard(self, num_discards=None, is_dealer=False):
         discards = []
         if self.difficulty == 'easy':
             while len(discards) < num_discards:

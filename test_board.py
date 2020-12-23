@@ -3,12 +3,12 @@ import board, players, users
 
 def test_Classic_constructor():
     print('\n--------- Test Board constructor -------------\n')
-    u1 = users.User('test_user1', 'test_user_1@yahoo.com')
-    u2 = users.User('test_user2', 'test_user_2@yahoo.com')
+    u1 = users.User(username='test_user1', email='test_user_1@yahoo.com')
+    u2 = users.User(username='test_user2', email='test_user_2@yahoo.com')
     p1 = players.Human(name='Jon', user=u1, lane=1)
     #p2 = players.Human(name='Rick', user=u2, lane=2)
     p2 = players.Computer(difficulty='hard', lane=2)
-    b = board.Classic(p1, p2)
+    b = board.Classic(player_one=p1, player_two=p2)
     print(f'- Player 1 name:     {b.player_one.name}')
     print(f'- Player 2 name:     {b.player_two.name}\n')
     b.display_board()
@@ -16,11 +16,11 @@ def test_Classic_constructor():
 
 def test_update_pegs():
     print('\n--------- Test Update Pegs -------------\n')
-    u1 = users.User('test_user1', 'test_user_1@yahoo.com')
-    u2 = users.User('test_user2', 'test_user_2@yahoo.com')
+    u1 = users.User(username='test_user1', email='test_user_1@yahoo.com')
+    u2 = users.User(username='test_user2', email='test_user_2@yahoo.com')
     p1 = players.Human(name='Jon', user=u1, lane=1)
     p2 = players.Human(name='Rick', user=u2, lane=2)
-    b = board.Classic(p1, p2)
+    b = board.Classic(player_one=p1, player_two=p2)
     p1.score = 15
     b.update_pegs()
     p2.score = 25
@@ -40,11 +40,11 @@ def test_update_pegs():
 
 def test_display_board():
     print('\n--------- Test Update Pegs -------------\n')
-    u1 = users.User('test_user1', 'test_user_1@yahoo.com')
-    u2 = users.User('test_user2', 'test_user_2@yahoo.com')
+    u1 = users.User(username='test_user1', email='test_user_1@yahoo.com')
+    u2 = users.User(username='test_user2', email='test_user_2@yahoo.com')
     p1 = players.Human(name='Jon', user=u1, lane=1)
     p2 = players.Human(name='Rick', user=u2, lane=2)
-    b = board.Classic(p1, p2)
+    b = board.Classic(player_one=p1, player_two=p2)
     b.display_board()
 
 

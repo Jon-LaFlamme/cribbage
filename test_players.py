@@ -1,132 +1,159 @@
 import players
 import deck
+import users
 
-#test1 player constructor
+
 def test_player():
-    p = players.player()
+    p = players.Player()
     print("\n---------  TEST player constructor  -------------\n")
     print(f'--Player name: {p.name}')
-    print(f'--Player record: {p.record}')
     print(f'--Player score: {str(p.score)}')
-    print(f'--Player is_human: {str(p.is_human)}')
+    print(f'--Player cards: {p.cards}')
+    print(f'--Player is_dealer: {p.is_dealer}')
 
-#test2 human constructor defualt and with name argument
-def test_human(*arg):
-    h = players.human(arg)
+
+def test_human():
+    username = 'test_user3'
+    email = 'test_user3@test.com'
+    u = users.User(username=username, email=email)
+    h = players.Human(user=u)
     print("\n---------  TEST human constructor  -------------\n")
-    print(f'--Player name: {h.name}')
-    print(f'--Player record: {h.record}')
-    print(f'--Player score: {str(h.score)}')
-    print(f'--Player is_human: {str(h.is_human)}')
+    print(f'--Human name: {h.name}')
+    print(f'--Human score: {str(h.score)}')
+    print(f'--Human cards: {h.cards}')
+    print(f'--Human is_dealer: {h.is_dealer}')
+    print(f'--Human user match stats: {h.user.match_stats}')
 
-#test3 human constructor defualt and with name argument
-def test_computer(difficulty):
-    c = players.computer(difficulty)
+
+def test_computer():
+    difficulty = 'hard'
+    c = players.Computer(difficulty=difficulty)
     print("\n---------  TEST computer constructor  -------------\n")
     print(f'--Player name: {c.name}')
-    print(f'--Player record: {c.record}')
     print(f'--Player score: {str(c.score)}')
-    print(f'--Player is_human: {c.is_human}')
     print(f'--Player difficulty: {c.difficulty}')
 
-#test4 display_hand() method
+
 def test_display_hand():
     d = deck.Deck()
-    p = players.computer('easy')
+    c = players.Computer('easy')
     hand = []
     for i in range(4):
         hand.append(d.deal_one())
-    p.cards = hand
+    c.cards = hand
     print("\n---------  TEST display_hand() method without numbers  -------------\n")
-    p.display_hand(False)
+    c.display_hand(is_numbered=False)
     print("\n---------  TEST display_hand() method with numbers  -------------\n")
-    p.display_hand(True)
+    c.display_hand(is_numbered=True)
     
-#test5 discard() method computer [easy, intermediate, difficult]
-def test_discard_computer(difficulty):
-    d = deck.Deck()
-    d.shuffle()
-    p = players.computer(difficulty)
-    hand = []
-    discards = []
-    for i in range(5):
-        hand.append(d.deal_one())
-    p.cards = hand
-    print(f"\n---------  TEST discard() method computer -- {difficulty}  -------------\n")
-    print('---hand before discards---')
-    p.display_hand(False)
-    discards = p.discard(1)
-    print('---hand after discards---')
-    p.display_hand(False)
-    p.cards = discards
-    print('---Discard choices---')
-    p.display_hand(False)
 
-#test6 discard() method human
-def test_discard_human():
+def test_discard_computer():
+    difficulty = 'easy'
+    num_discards = 2
     d = deck.Deck()
     d.shuffle()
-    p = players.human()
+    c = players.Computer(difficulty=difficulty)
     hand = []
     discards = []
     for i in range(6):
         hand.append(d.deal_one())
-    p.cards = hand
+    c.cards = hand
+    print(f"\n---------  TEST discard() method computer -- {difficulty}  -------------\n")
+    print('---hand before discards---')
+    c.display_hand(False)
+    discards = c.discard(num_discards=num_discards, is_dealer=True)
+    print('---hand after discards---')
+    c.display_hand(False)
+    c.cards = discards
+    print('---Discard choices---')
+    c.display_hand(False)
+
+
+def test_discard_human():
+    d = deck.Deck()
+    d.shuffle()
+    username = 'test_user3'
+    email = 'test_user3@test.com'
+    u = users.User(username=username, email=email)
+    h = players.Human(user=u)
+    hand = []
+    discards = []
+    for i in range(6):
+        hand.append(d.deal_one())
+    h.cards = hand
     print(f"\n---------  TEST discard() method human -------------\n")
     print('---hand before discards---')
-    p.display_hand(True)
-    discards = p.discard(2)
+    h.display_hand(is_numbered=True)
+    discards = h.discard(2)
     print('---hand after discards---')
-    p.display_hand(False)
-    p.cards = discards
+    h.display_hand(is_numbered=False)
+    h.cards = discards
     print('---Discard choices---')
-    p.display_hand(False)
+    h.display_hand(is_numbered=False)
 
-#test7 cut_deck() computer and human
+
 def test_cut_deck():
     d = deck.Deck()
-    p = players.computer('easy')
+    c = players.Computer(difficulty='easy')
     print(f"\n---------  TEST cut_deck() method computer -------------\n")
-    print(f'-- before cut --')
+    print(f'\n-- before cut --\n')
     i = 0
     for card in d.deck:
         i += 1
         print(f'{i}) {card.name}')
-    p.cut_deck(d)
-    print(f'-- after cut --')
+    c.cut_deck(d)
+    print(f'\n-- after cut --\n')
     i = 0
     for card in d.deck:
         i += 1
         print(f'{i}) {card.name}')
 
     d = deck.Deck()
-    p = players.human()
+    username = 'test_user3'
+    email = 'test_user3@test.com'
+    u = users.User(username=username, email=email)
+    h = players.Human(user=u)
     print(f"\n---------  TEST cut_deck() method human -------------\n")
-    print(f'-- before cut --')
+    print(f'\n-- before cut --\n')
     i = 0
     for card in d.deck:
         i += 1
         print(f'{i}) {card.name}')
-    p.cut_deck(d)
-    print(f'-- after cut --')
+    h.cut_deck(d)
+    print(f'\n-- after cut --\n')
     i = 0
     for card in d.deck:
         i += 1
         print(f'{i}) {card.name}')
 
+def test_peg_one_computer():
+    print(f"\n---------  TEST peg_one() computer -------------\n")
+    difficulty = 'easy'
+    count = 10
+    d = deck.Deck()
+    d.shuffle()
+    c = players.Computer(difficulty=difficulty)
+    hand = []
+    stack = []
+    for i in range(2):
+        hand.append(d.deal_one())
+        stack.append(d.deal_one())
+    c.cards = hand
+    c.display_hand()
+    selected = c.peg_one(count=count, stack=stack)
+    print(f'Peg selection: {selected.name}')
+
+
 if __name__ == "__main__":
-    #test_player()
-    #test_human()
-    #test_human('Jane Doe')
-    #test_computer('easy')
-    #test_computer('intermediate')
-    #test_computer('difficult')
-    #test_display_hand()
-    #test_discard_computer('easy')
-    #test_discard_computer('intermediate')
-    #test_discard_computer('difficult')
-    #test_discard_human()
-    #test_cut_deck()
+    #test_player()      #PASSED 12/22/20  
+    #test_human()       #PASSED 12/22/20
+    #test_computer()      #PASSED 12/22/20
+    #test_display_hand()    #PASSED 12/22/20
+    #test_discard_computer()    #Test1: 'easy', Test2: 'medium'  Test3: 'hard' PASSED 12/22/20  TODO(Jon) (Optimized Statistically Needs Tuning)
+    #test_discard_human()   #PASSED 12/22/20
+    #test_cut_deck()     #Test1: Computer random cut, Test1: Human chosen cut, PASSED 12/22/20
+    test_peg_one_computer()
+    #test_peg_one_human()       
 
 
     

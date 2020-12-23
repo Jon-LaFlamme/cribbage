@@ -36,7 +36,7 @@ class Card():
         self.name: a string representation of the card
     """
 
-    def __init__(self, suit, rank, value, rankname):
+    def __init__(self, suit=None, rank=None, value=None, rankname=None):
         self.suit = suit
         self.rank = rank
         self.value = value
@@ -70,10 +70,11 @@ class Deck():
 
         for suit in _suits:
             for rank in _ranks:
-                _deck.append(Card(suit,_ranks[rank],_values[rank],rank))
+                _deck.append(Card(suit=suit, rank=_ranks[rank], value=_values[rank], rankname=rank))
         self.deck = _deck
 
-    def cut(self,pivot):
+
+    def cut(self, pivot=None):
         _low = []
         _hi = []
         try:
@@ -85,13 +86,15 @@ class Deck():
         except ValueError:
             print("ERROR: Index out of range")
 
-    def peek(self,index):
+
+    def peek(self, index=None):
         try:
             card = self.deck[index]
         except ValueError:
             print("ERROR: Index out of range")
         return card
         
+
     def shuffle(self):
         random.shuffle(self.deck)
         for i in range(int(len(self.deck)/2)):
@@ -100,6 +103,7 @@ class Deck():
         for i in range(int(len(self.deck)/2)):
             self.cut(random.randint(0,len(self.deck)-1))
         random.shuffle(self.deck)
+
 
     def deal_one(self):
         if self.deck:

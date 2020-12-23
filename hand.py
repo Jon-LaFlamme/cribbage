@@ -5,7 +5,7 @@ from itertools import combinations
 
 class Hand():
 
-    def __init__(self,list_of_cards, is_crib=False, turncard=None):
+    def __init__(self, list_of_cards=None, is_crib=False, turncard=None):
         self.hand = list_of_cards
         self.turncard = turncard
         self.is_crib = is_crib
@@ -223,7 +223,7 @@ class Hand():
         return best_hand
 
 
-    def peg_selection_lead(self,turncard):
+    def peg_selection_lead(self, turncard=None):
         #Check if there is a pair. If so, lead one of the cards in the pair
         for key,value in self.ranks.items():
             if value > 1:
@@ -242,10 +242,10 @@ class Hand():
         return self.hand[0]
 
 
-    def peg_selection(self, stack, count, turncard=None):
+    def peg_selection(self, stack=[], count=None, turncard=None):
         #route to lead-off method if count is zero
         if count == 0:
-            return self.peg_selection_lead(turncard)
+            return self.peg_selection_lead(turncard=turncard)
         #check for three or four of a kind
         if len(stack) > 2:
             for key,value in self.ranks.items():
@@ -274,7 +274,7 @@ class Hand():
             if card.value + count < 31:
                 return card
 
-    def determine_peg_points(self, count):
+    def determine_peg_points(self, count=None):
         points = 0
         #points for 15 or 31
         if len(self.hand) > 1:

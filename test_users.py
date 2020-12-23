@@ -11,13 +11,13 @@ def test_add_user():
     print(f'\n---------- Testing add user -----------')
     username = 'test_user3'
     email = 'test_user3@test.com'
-    users.add_user(username, email)
+    users.add_user(username=username, email=email)
 
 def test_lookup_user():
     print(f'\n---------- Testing user lookup -----------\n')
     username = 'test_user3'
     email = 'test_user3@test.com'
-    response = users.lookup_user(username, email)
+    response = users.lookup_user(username=username, email=email)
     print(f'\n--Response key: fa = found,authenticated; fna = found,non-authenticated; nf = not found -\n')
     print(f'- Response code: {response}.  ')
 
@@ -25,7 +25,7 @@ def test_User_constructor():
     print(f'\n---------- Testing User constructor -----------\n')
     username = 'Fred Astaire'
     email = 'fred@portlandia.com'
-    u = users.User(username, email)
+    u = users.User(username=username, email=email)
     print(f'\n User username: {u.name}')
     print(f'\n User match statistics: {u.match_stats}')
 
@@ -35,7 +35,7 @@ def test_add_badge():
     email = 'test_user1@test.com'
     badge = 'win_streak_3'
     difficulty = 'expert'
-    u = users.User(username, email)
+    u = users.User(username=username, email=email)
     u.add_badge(badge, difficulty)
     print(f'--- Updated Badges field for {u.name}: \n')
     print(u.profile[username]['badges'])
@@ -44,8 +44,8 @@ def test_add_credits():
     print(f'\n---------- Testing Add Credits -----------\n')
     username = 'test_user1'
     email = 'test_user1@test.com'
-    u = users.User(username, email)
-    u.add_credits(3)
+    u = users.User(username=username, email=email)
+    u.add_credits(credits=3)
     print(f'--- Updated Credits field for {u.name}:')
     print(u.profile[username]['credits'])
 
@@ -53,8 +53,8 @@ def test_update_unlocked_boards():
     print(f'\n---------- Testing Update Unlocked Boards -----------\n')
     username = 'test_user1'
     email = 'test_user1@test.com'
-    u = users.User(username, email)
-    u.update_unlocked_boards('miracle_mile', 'expert')
+    u = users.User(username=username, email=email)
+    u.update_unlocked_boards(board='miracle_mile', difficulty='expert')
     print(f'--- Updated Unlocked Boards Field for {u.name}:')
     print(u.profile[username]['unlocked_boards']) 
 
@@ -63,7 +63,7 @@ def test_compute_new_rank():
     test_match_stats = {'win': 1, 'was_skunked': 0, 'was_dbl_skunked': 0, 'skunked_opponent': 1, 'dbl_skunked_opponent': 0}
     username = 'test_user1'
     email = 'test_user1@test.com'
-    u = users.User(username, email)
+    u = users.User(username=username, email=email)
     print(f'\n--- Original rank for {u.name}:')
     print(u.profile[username]['rank'])
     u.match_stats = test_match_stats
@@ -75,7 +75,7 @@ def test_update_profile():
     test_match_stats = {'win': 1, 'was_skunked': 0, 'was_dbl_skunked': 0, 'skunked_opponent': 1, 'dbl_skunked_opponent': 0}
     username = 'test_user1'
     email = 'test_user1@test.com'
-    u = users.User(username, email)
+    u = users.User(username=username, email=email)
     print(f'--- The original profile for {u.name}\n')
     print(u.profile)
     u.match_stats = test_match_stats
@@ -88,7 +88,7 @@ def test_save_updated_profile():
     test_match_stats = {'win': 1, 'was_skunked': 0, 'was_dbl_skunked': 0, 'skunked_opponent': 1, 'dbl_skunked_opponent': 0}
     username = 'test_user1'
     email = 'test_user1@test.com'
-    u = users.User(username, email)
+    u = users.User(username=username, email=email)
     print(f'--- The original profile for {u.name}\n')
     print(u.profile)
     u.match_stats = test_match_stats
@@ -96,7 +96,7 @@ def test_save_updated_profile():
     u.save_updated_profile()
     print('Saving new stats to file...')
     print('Loading the updated file now...')
-    updated_u = users.User(username, email)
+    updated_u = users.User(username=username, email=email)
     print(f'--- The updated profile for {updated_u.name}\n')
     print(updated_u.profile)
 
@@ -104,7 +104,7 @@ def test_display_stats():
     print(f'\n---------- Testing Display Stats -----------\n')
     username = 'test_user1'
     email = 'test_user1@test.com'
-    u = users.User(username, email)
+    u = users.User(username=username=, email=email)
     u.display_stats()
 
 

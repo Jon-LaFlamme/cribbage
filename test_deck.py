@@ -43,7 +43,7 @@ def test_deck_cut():
         print(f'- {i}) {card.name}')
 
     #typical case (index 25):
-    deck.cut(26)
+    deck.cut(index=26)
     i = 0
     print(f'\n--- Deck cut at index 26 \n')
     i = 0
@@ -52,7 +52,7 @@ def test_deck_cut():
         print(f'- {i}) {card.name}')
 
     #edge case 1 (index 0):
-    deck.cut(0)
+    deck.cut(index=0)
     i = 0
     print(f'\n--- Deck cut at index 0 \n')
     for card in deck.deck:
@@ -60,7 +60,7 @@ def test_deck_cut():
         print(f'- {i}) {card.name}')
 
     #edge case 2 (index 51):
-    deck.cut(51)
+    deck.cut(index=51)
     i = 0
     print(f'\n--- Deck cut at index 51 \n')
     for card in deck.deck:
@@ -68,7 +68,7 @@ def test_deck_cut():
         print(f'- {i}) {card.name}')
 
     #Invalid case (index 52):
-    deck.cut(52)
+    deck.cut(index=52)
     i = 0
     print(f'\n--- Deck cut at indext 52 \n')
     for card in deck.deck:
@@ -103,20 +103,14 @@ def test_deck_deal_one():
     #testing exception
     deck.deal_one()
 
-#print card IDs for deck
-def card_ids():
-    print("\n---------  Card Ids  -------------\n")
-    deck = d.Deck()
-    for card in deck.deck:
-        print(card.id)
+
 
 
 if __name__ == "__main__":
-    #test_deck_constructor()
-    #test_card_properties()
-    #test_deck_peek()
-    #test_deck_cut()
-    #test_deck_shuffle()
-    #test_deck_deal_one()
-    #card_ids()
+    #test_deck_constructor()     #PASSED 12/22/20
+    #test_card_properties()     #PASSED 12/22/20
+    #test_deck_peek()           #PASSED 12/22/20
+    #test_deck_cut()            #PASSED 12/22/20
+    #test_deck_shuffle()        #PASSED 12/22/20
+    #test_deck_deal_one()       #PASSED 12/22/20
 

@@ -9,7 +9,7 @@ def test_hand_constructor():
     cards = []
     for i in range(6):
         cards.append(d.deal_one())
-    h = hand.Hand(cards)
+    h = hand.Hand(list_of_cards=cards)
     if h.turncard:
         print(f'- turncard: {h.turncard}')
     else:
@@ -53,7 +53,7 @@ def test_points_from_runs():
     for i in range(4):
         cards.append(d.deal_one())
     turncard = d.deal_one()
-    h = hand.Hand(cards,turncard=turncard)
+    h = hand.Hand(list_of_cards=cards, turncard=turncard)
     print(f'- is_crib: {h.is_crib}')
     print(f'- values: {h.values}')
     print(f'- ranks: {h.ranks}')
@@ -74,7 +74,7 @@ def test_points_from_fifteens():
     cards = []
     for i in range(5):
         cards.append(d.deal_one())
-    h = hand.Hand(cards)
+    h = hand.Hand(list_of_cards=cards)
     if h.turncard:
         print(f'- turncard: {h.turncard}')
     else:
@@ -97,7 +97,7 @@ def test_points_from_flush():
     cards = []
     for i in range(5):
         cards.append(d.deal_one())
-    h = hand.Hand(cards)
+    h = hand.Hand(list_of_cards=cards)
     if h.turncard:
         print(f'- turncard: {h.turncard}')
     else:
@@ -121,7 +121,7 @@ def test_points_from_knobs():
     turncard = d.deal_one()
     for i in range(4):
         cards.append(d.deal_one())
-    h = hand.Hand(cards,turncard=turncard)
+    h = hand.Hand(list_of_cards=cards, turncard=turncard)
     if h.turncard:
         print(f'- turncard: {h.turncard.name}')
     else:
@@ -145,7 +145,7 @@ def test_compute_score():
     turncard = d.deal_one()
     for i in range(4):
         cards.append(d.deal_one())
-    h = hand.Hand(cards,turncard=turncard)  
+    h = hand.Hand(list_of_cards=cards, turncard=turncard)  
     print(f'- is_crib: {h.is_crib}')
     print(f'- values: {h.values}')
     print(f'- ranks: {h.ranks}')
@@ -169,9 +169,9 @@ def test_optimize_by_points():
     for i in range(6):
         cards.append(d.deal_one())
         print(f'- {cards[-1].name}')
-    h = hand.Hand(cards)
+    h = hand.Hand(list_of_cards=cards)
     choices = h.optimize_by_points()
-    ch = hand.Hand(choices)
+    ch = hand.Hand(list_of_cards=choices)
     print(f'--- 4-cards selected -----')
     for card in ch.hand:
         print(card.name)
