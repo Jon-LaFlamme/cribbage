@@ -11,7 +11,7 @@ RANKS = {'ace':1,'two':2,'three':3,'four':4,'five':5,'six':6,'seven':7,'eight':8
 SUITS = ['clubs','diamonds','hearts','spades']
 
 discard_outcomes = {}
-#template:   {discard_id: {times_discardec: +, crib_pts: +}, ...}
+#template:   {discard_id: {times_discarded: +, crib_pts: +}, ...}
 
 performance_by_hand = {}    
 #template: {"hand_id": 
@@ -131,7 +131,7 @@ def determine_peg_points(stack=None, count=None):
 
 
 
-def peg_sequence(is_dealer_p1,turncard,p1,p2):
+def peg_sequence(is_dealer_p1, turncard, p1,p2):
     hand1 = list(p1.cards).copy()
     hand2 = list(p2.cards).copy()
     if is_dealer_p1:
@@ -222,19 +222,11 @@ def memorize_discards(h1_disc, h2_disc, crib_pts, is_dealer_p1):
     discard_vec = [h1, h2]
     for discards in discard_vec:
         if discards not in discard_outcomes:
-            discard_outcomes[discards] = {'times_dealer': 0, 'times_nodeal': 0, 'dealer_crib': 0, 'nodeal_crib': 0}
-
-    if is_dealer_p1:
-        discard_outcomes[h1]['times_dealer'] += 1
-        discard_outcomes[h1]['dealer_crib'] += crib_pts
-        discard_outcomes[h2]['times_nodeal'] += 1
-        discard_outcomes[h2]['nodeal_crib'] += crib_pts
-    else:
-        discard_outcomes[h2]['times_dealer'] += 1
-        discard_outcomes[h2]['dealer_crib'] += crib_pts
-        discard_outcomes[h1]['times_nodeal'] += 1
-        discard_outcomes[h1]['nodeal_crib'] += crib_pts
-
+            discard_outcomes[discards] = {'times_discarded': 0, 'crib_points': 0}
+    discard_outcomes[h1]['times_discarded'] += 1
+    discard_outcomes[h1]['crib_points'] += crib_pts
+    discard_outcomes[h2]['times_discarded'] += 1
+    discard_outcomes[h2]['crib_points'] += crib_pts
 
 def learning_by_hands(intelligent=True):
     #Function initializations: setup players, deck, turncard, local variables, determine dealer
@@ -244,9 +236,9 @@ def learning_by_hands(intelligent=True):
     d.shuffle()
     crib = []
     turncard = d.deal_one()
-    #is_dealer_p1 = True
-    #if random.randint(0,9) & 1  == 1:
-        #is_dealer_p1 = False
+    is_dealer_p1 = True
+    if random.randint(0,9) & 1  == 1:
+        is_dealer_p1 = False
 
     #Allows learning Function to focus either on random configurations or heuristically influenced configurations 
     if not intelligent:
@@ -260,18 +252,26 @@ def learning_by_hands(intelligent=True):
         for i in range(6):
             p1_dealt_hand.append(d.deal_one())
             p2_dealt_hand.append(d.deal_one())
-        #h1 = hand.Hand(p1_dealt_hand)
-        #h2 = hand.Hand(p2_dealt_hand)
+        h1 = hand.Hand(p1_dealt_hand)
+        h2 = hand.Hand(p2_dealt_hand)
         #For heuristically influenced hand selection
-        #h1_selects = h1.optimize_by_points()
-        #h2_selects = h2.optimize_by_points()
-        #p1.cards = list(h1_selects)
-        #p2.cards = list(h2_selects)
-        #for cp1,cp2 in zip(p1_dealt_hand,p2_dealt_hand):
-            #if cp1 not in h1_selects:
-                #crib.append(cp1)
-            #if cp2 not in h2_selects:
-                #crib.append(cp2)
+        h1_selects = h1.optimize_by_points(2)
+        h2_selects = h2.optimize_by_points(2)
+        p1.cards = list(h1_selects)
+        p2.cards = list(h2_selects)
+        p1_discards = []
+        p2_discards = []
+
+        for cp1,cp2 in zip(p1_dealt_hand,p2_dealt_hand):
+            if cp1 not in h1_selects:
+                p1_discards.append(cp1)
+            if cp2 not in h2_selects:
+                p2_discards.append(cp2)
+        
+        crib.extend(p1_discards)
+        crib.extend(p2_discards)
+
+        """
         h1_combos = combinations(p1_dealt_hand, 4)
         h2_combos = combinations(p2_dealt_hand, 4)
         for h1h, h2h in zip(h1_combos, h2_combos):
@@ -310,17 +310,18 @@ def learning_by_hands(intelligent=True):
                     memorize_results(p1, p2, p1_peg, p2_peg, is_dealer_p1)
                 if len(h1_disc) == 2 and len (h2_disc) == 2:
                     memorize_discards(h1_disc, h2_disc, crib_pts, is_dealer_p1)
+                """
 
-
-    #Main driver block: peg sequence updates player scores; scores stored before updated again in show_sequence 
-    #peg_sequence(is_dealer_p1, turncard, p1, p2)
-    #p1_peg = p1.score
-    #p2_peg = p2.score  
-    #show_sequence(turncard,p1,p2)
-    #crib_pts = crib_sequence(turncard, crib)
-    #Memorize the results, check for occasionally memory corruption
-    #if len(p1.cards) == 4 and len(p2.cards) == 4:
-        #memorize_results(p1, p2, p1_peg, p2_peg, crib_pts, is_dealer_p1)
+        #Main driver block: peg sequence updates player scores; scores stored before updated again in show_sequence 
+        peg_sequence(is_dealer_p1, turncard, p1, p2)
+        p1_peg = p1.score
+        p2_peg = p2.score  
+        show_sequence(turncard, p1, p2)
+        crib_pts = crib_sequence(turncard, crib)
+        #Memorize the results, check for occasionally memory corruption
+        if len(p1.cards) == 4 and len(p2.cards) == 4:
+            memorize_results(p1, p2, p1_peg, p2_peg, is_dealer_p1)
+            memorize_discards(p1_discards, p2_discards, crib_pts, is_dealer_p1)
 
 
 if __name__ == "__main__":
@@ -331,8 +332,10 @@ if __name__ == "__main__":
     with open('discards.json','r') as f:
         discard_outcomes = json.load(f)
 
-    for i in range(10):
+    for i in range(500000):
         learning_by_hands(intelligent=True)
+        if i%1000 == 0:
+            print(f'{i} rounds completed.')
 
     print(f' length of peformance by hand: {len(performance_by_hand)}')
     print(f' length of discard outcomes: {len(discard_outcomes)}')
