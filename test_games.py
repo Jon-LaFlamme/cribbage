@@ -50,7 +50,7 @@ def test_discard_sequence():
     g.player_two.display_hand()
     print('\n----------- The crib --------------')
     for card in g.crib:
-        print(card.name)
+        print(f'|| {card.name}')
 
 def test_turncard_sequence():
     print(f'\n-------- Test Turncard Sequence ----------\n')
