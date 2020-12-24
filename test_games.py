@@ -92,7 +92,7 @@ def test_show_sequence():
 
 def test_game_driver():
     #computer vs computer
-    p1 = players.Computer(difficulty='medium')
+    p1 = players.Computer(difficulty='hard')
     p2 = players.Computer(difficulty='medium')
     g = games.Cribbage(p1,p2)
     g.game_driver()

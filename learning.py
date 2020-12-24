@@ -332,7 +332,7 @@ if __name__ == "__main__":
     with open('discards.json','r') as f:
         discard_outcomes = json.load(f)
 
-    for i in range(1000000):
+    for i in range(10):
         learning_by_hands(intelligent=True)
         if i%1000 == 0:
             print(f'{i} rounds completed.')

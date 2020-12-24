@@ -11,6 +11,7 @@ Typical Usage Examples:
 """
 
 import learning
+import json
 from itertools import combinations
 
 class Hand():
@@ -228,15 +229,40 @@ class Hand():
         return best_hand
 
 
-    def optimize_statistically(self, is_dealer=False):
-        cards = self.hand.copy()
-        hand_scores = {}
-        possible_hands = combinations(cards,4)
+    def optimize_statistically(self, is_dealer=False): 
+        with open('hands.json','r') as f:
+            performance_by_hand = json.load(f)
+        with open('discards.json','r') as f:
+            discard_outcomes = json.load(f)
+        
+        possible_hands = combinations(self.hand, 4)
+        max_score = 0 
         for hand in possible_hands:
+            discards = []
+            for card in self.hand:
+                if card not in hand:
+                    discards.append(card)
+            discard_id = learning.discard_signature(discards)
             hand_id = learning.hand_id(hand)
-            hand_scores[hand_id] = learning.performance_by_hand[hand_id]
-        ordered_hand_id = sorted(hand_scores.items(), key=lambda x: x[1],reverse=True)
-        best_hand = ordered_hand_id[0]
+            discard_stats = discard_outcomes[discard_id]
+            hand_stats = performance_by_hand[hand_id]
+
+            if is_dealer:
+                avg_hand = hand_stats['hand_pts'] / (hand_stats['times_nodeal'] + hand_stats['times_dealer'])
+                avg_pos_peg = hand_stats['dealer_pos_peg'] / hand_stats['times_dealer']
+                avg_neg_peg = hand_stats['dealer_neg_peg'] / hand_stats['times_dealer']
+                avg_crib = discard_stats['crib_points'] / discard_stats['times_discarded']
+                aggregate_score = avg_hand + avg_pos_peg - avg_neg_peg + avg_crib
+            else:
+                avg_hand = hand_stats['hand_pts'] / (hand_stats['times_nodeal'] + hand_stats['times_dealer'])
+                avg_pos_peg = hand_stats['nodeal_pos_peg'] / hand_stats['times_nodeal']
+                avg_neg_peg = hand_stats['nodeal_neg_peg'] / hand_stats['times_nodeal']
+                avg_crib = discard_stats['crib_points'] / discard_stats['times_discarded']
+                aggregate_score = avg_hand + avg_pos_peg - avg_neg_peg - avg_crib
+            if aggregate_score > max_score:
+                max_score = aggregate_score
+                best_hand = hand    
+
         return best_hand
 
 
