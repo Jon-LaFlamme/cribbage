@@ -1,29 +1,23 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
-import random
-
-#TODO(Jon) Need to test Deck.cut() method. Seems to be failing in an edge case
-
-"""deck Module: A simple deck of playing cards.
+"""A deck of playing cards with standard operations.
 
 Card() maintains multiple string and integer properties for easy comparisons.
 Deck() maintains a list of playing cards that can be shuffled, dealt and cut. 
 
-    Typical Usage Example:
+    Typical Usage Examples:
 
     d = Deck()                      #Constructor
     d.shuffle()                     #In-place custom deck shuffling method
     d.cut()                         #In-place spitting and reordering of deck
     peeked_card = d.peek(index)     #Copies card at index, does not change deck
     popped_card = d.deal_one()      #list pop
-
-    for card in deck.deck: print(card.name)
-    print(removed_card.suit)
-    print(removed_card.name)
-    peeked_card.rank >= removed_card.rank
 """
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
+import random
+
 
 class Card():
     """Playing card
@@ -74,7 +68,7 @@ class Deck():
         self.deck = _deck
 
 
-    def cut(self, pivot=None):
+    def cut(self, pivot):
         _low = []
         _hi = []
         try:
@@ -87,7 +81,7 @@ class Deck():
             print("ERROR: Index out of range")
 
 
-    def peek(self, index=None):
+    def peek(self, index):
         try:
             card = self.deck[index]
         except ValueError:

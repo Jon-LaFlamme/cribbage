@@ -43,13 +43,11 @@ class Player():
             else:
                 print(f'|| {card.name} ')
 
-    def can_peg(self, count=None):
+    def can_peg(self, count):
         for card in self.cards:
             if card.value + count <= 31:
-                return True
-        else:
-            return False
-
+                return True 
+        return False
 
 
 class Human(Player):
@@ -124,7 +122,7 @@ class Computer(Player):
         self.peg(self)                          
     """
 
-    def __init__(self, difficulty='easy', lane=None):
+    def __init__(self, difficulty='easy'):
         super().__init__()
         _difficulties = ['easy','medium','hard']
         _gender = ['male','female']
@@ -142,22 +140,23 @@ class Computer(Player):
         else:
             deck.cut(index)
 
-    def peg_one(self, stack=[], count=None, turncard=None):
-        h = hand.Hand(self.cards)
-        return h.peg_selection(stack=stack, count=count, turncard=turncard)
+    def peg_one(self, stack, count, turncard):
+        h = hand.Hand(self.cards, turncard=turncard)
+        return h.peg_selection(stack, count)
 
-    def discard(self, num_discards=None, is_dealer=False):
+    def discard(self, num_discards=2, is_dealer=False):
         discards = []
         if self.difficulty == 'easy':
             while len(discards) < num_discards:
                 discards.append(self.cards.pop(random.randint(0,len(self.cards)-1)))   
         elif self.difficulty == 'medium':
             h = hand.Hand(self.cards)
-            selects = h.optimize_by_points()
+            selects = h.optimize_by_points(num_discards=num_discards)
             for card in self.cards:
                 if card not in selects:
                     discards.append(card)
-                    self.cards.remove(card)
+            for card in discards:
+                self.cards.remove(card)
         elif self.difficulty == 'hard':
             h = hand.Hand(self.cards)
             selects = h.optimize_statistically(is_dealer)

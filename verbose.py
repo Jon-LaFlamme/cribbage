@@ -1,93 +1,62 @@
-import hand
 import inflect
 
-verbose = inflect.engine()
+#Utility Function
+def words(num):
+    v = inflect.engine()
+    return v.number_to_words(num)
 
+#Newgame and First Deal sequence
+def start_game(player1, player2):
+    print('=============== NEW GAME ===============\n')
+    print(f'{player1.name} versus {player2.name}\n')
 
-def process_play(stack, name, count):
+def cut_for_deal():
+    print('\n--------- Cut for first deal ----------\n')
 
-    points = 0
-    if count == 15:
-        _fifteen = True
-        points += 2
+def cuts_card(player, card):
+    print(f'{player.name} cuts a {card.name}.')
+
+def win_first_deal(player):
+    print(f'{player.name} wins first deal')
+
+#Deal, Discard and Cut Sequence
+def dealing(player):
+    print(f'{player.name} dealing...')
+
+def discard(player):
+    print(f'{player.name} discards.')
+
+def turncard(nondealer, dealer, card):
+    print(f'{nondealer.name} cuts the deck.')
+    print(f'{dealer.name} turns a {card.name}.')
+
+def heels(player, card):
+    print(f'{player.name} scores two points for heels.')
+
+#Peg Sequence
+def pegging():
+    print('\n---------- Pegging Begins ---------\n')
+
+def peg_one(player, card, count):
+    print(f'{player.name} plays a {card.name}. Count is {words(count)}.')
+
+def peg_points(player, points):
+    print(f'{player.name} pegs {points} points.')
+
+def peg_go(player):
+    print(f'{player.name} played last card for a go and scores 1 point.')
+
+#Count Sequence
+def counting():
+    print(f'\n---------- Pegging Complete. Now Scoring Hands  -----------\n')
+
+def score_hand(player, points, is_crib=False):
+    if is_crib:
+        print(f'{player.name} scores {points} points in the crib.')
     else:
-        _fifteen = False
-    if count ==  31:
-        _thirtyone = True
-        points += 2
-    else:
-        _thirtyone = False
-    _run_points = 0
-    _pair_points = 0 
-    _matched_cards = 0
-    _card_played = stack[-1].rankname
-    h = stack.copy()
+        print(f'{player.name} scores {points} in his/her hand.')
 
-    if len(stack) > 1:
-        #check for runs by working backward
-        if len(stack) > 2:
-            i = 3
-            while i <= len(stack):
-                substack = hand.Hand(h[-i:])
-                result = substack.points_from_runs()
-                if result > 0:
-                    _run_points = result
-                else:
-                    break
-                i += 1
-        #check for pairs
-        if stack[-1].rank == stack[-2].rank:
-            _pair_points += 2
-            _matched_cards = 2
-            if len(stack) > 2 and stack[-2].rank == stack[-3].rank:
-                _pair_points += 6
-                _matched_cards = 3
-                if len(stack) > 3 and stack[-3].rank == stack[-4].rank:
-                    _pair_points += 12  
-                    _matched_cards = 4
+def new_round():
+    print('\n---------------- Next Round --------------------\n')
 
 
-    if points == 0:
-        return nada(name, count, points)
-    if _run_points > 0:
-        if _fifteen or _thirtyone:
-            return  run(name, count, True)
-        else:
-            return  run(name, count)
-
-
-
-
-
-
-    return points
-
-
-def fifteen(self, string=None):
-    
-
-
-def thirtyone(self):
-
-
-def run(name, count, _run_points, points, is_fiteen_or_thirtyone=False):
-    if is_fiteen_or_thirtyone:
-        print(f'{name}: {verbose.number_to_words(count)} and a run of {verbose.number_to_words(_run_points)} is {verbose.number_to_words(points)}.')
-    else:
-        print(f'{name}: {verbose.number_to_words(count)} makes a run of {verbose.number_to_words(_run_points)}.')
-    return points
-
-def pair(name, count, points, _matched_cards, _card_played, is_fiteen_or_thirtyone=False):
-    if is_fiteen_or_thirtyone:
-        print(f'{name}: {verbose.number_to_words(count)} and {verbose.number_to_words(_matched_cards)} {_card_played}s for {verbose.number_to_words(points)}.')
-    else:
-        print(f'{name}: {verbose.number_to_words(count)} and {verbose.number_to_words(_matched_cards)} {_card_played}s for {verbose.number_to_words(points)}.')
-    return points
-
-def nada(name, count, points):
-    print(f'{name}:  {verbose.number_to_words(count)}.')
-    return points
-
-
-
-def peg_driver(self):

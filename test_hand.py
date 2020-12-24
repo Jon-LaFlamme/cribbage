@@ -169,8 +169,8 @@ def test_optimize_by_points():
     for i in range(6):
         cards.append(d.deal_one())
         print(f'- {cards[-1].name}')
-    h = hand.Hand(list_of_cards=cards)
-    choices = h.optimize_by_points()
+    h = hand.Hand(cards)
+    choices = h.optimize_by_points(2)
     ch = hand.Hand(list_of_cards=choices)
     print(f'--- 4-cards selected -----')
     for card in ch.hand:
@@ -178,6 +178,7 @@ def test_optimize_by_points():
     points = ch.compute_score()
     print(f'---------------------')
     print(f'points from selection: {points}')
+
 
 
 if __name__ == "__main__":

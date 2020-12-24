@@ -1,11 +1,24 @@
+"""Provides a simple, shell-based display of a cribbage board."""
+
 import players
 import users
 
 
 class Board():
+    """Tracks player scores and peg positions.
+    
+    Attributes:
+        self.player_one: object of players.Player() (e.g. players.Human())
+        self.player_two: object of players.Player()  (e.g. players.Computer())
+        self.lane1_lead_peg: integer of current score for player_one
+        self.lane1_hind_peg: integer of prior score for player_one
+        self.lane2_lead_peg: integer of current score for player_two
+        self.lane2_hind_peg: integer of prior score for player_two
+    """
 
 
-    def __init__(self, player_one=None, player_two=None):
+    def __init__(self, player_one, player_two):
+        """Initializes Board Base class with two players.Player() objects."""
         self.player_one = player_one
         self.player_two = player_two
         self.lane1_lead_peg = 0
@@ -13,8 +26,14 @@ class Board():
         self.lane2_lead_peg = 0
         self.lane2_hind_peg = 0
 
+
     def update_pegs(self): 
-        self.display[0] = f'{self.player_one.name}: {self.player_one.score}   vs   {self.player_two.name}: {self.player_two.score}\n'
+        """Updates peg positions after a score change."""
+
+        #  Determine which player has a new score. Update peg positions. Vacant
+        #  is the oldest peg position that needs to be wiped. Lane number
+        #  corresponds to the player with the updated score and peg positions. 
+
         if self.lane1_lead_peg != self.player_one.score:
             vacant = self.lane1_hind_peg
             self.lane1_hind_peg = self.lane1_lead_peg
@@ -31,9 +50,15 @@ class Board():
         pass
 
 class Classic(Board):
+    """Implements a classic cribbage board design.
+    
+    Attributes:
+        self.mapper: dictionary mapping peg positions to 'rows' in self.display.
+        self.display: a list of strings that display peg positions on a board.
+    """
 
-    def __init__(self, player_one=None, player_two=None):
-        super().__init__(player_one=None, player_two=None)
+    def __init__(self, player_one, player_two):
+        super().__init__(player_one, player_two)
         self.mapper = {'0':1,'1':3,'2':4,'3':5,'4':6,'5':7,'6':9,'7':10,'8':11,'9':12,'10':13,
                         '11':15,'12':16,'13':17,'14':18,'15':19,'16':21,'17':22,'18':23,'19':24,'20':25,
                         '21':27,'22':28,'23':29,'24':30,'25':31,'26':33,'27':34,'28':35,'29':36,'30':37,
@@ -91,7 +116,14 @@ class Classic(Board):
 
 
     def update_board(self, vacant=None, lane=None):
-        #determine Lane 1 positions: out: 4, back: 7
+        """Maps peg position updates to the board's display attribute.
+
+        Args:
+            vacant (integer): The peg position to be wiped. Defaults to None.
+            lane (integer): The lane of vacant peg position. Defaults to None.
+        """
+
+        #Lane 1 string indices: out: 4, back: 7
         if lane == 1:
             old_row = self.mapper[str(vacant)]
             new_row = self.mapper[str(self.lane1_lead_peg)]
@@ -103,7 +135,8 @@ class Classic(Board):
                 new_col = 4
             else:
                 new_col = 7
-        #determine lane 2 positions: out: 31, back 28
+
+        #Lane 2 string indices: out: 31, back 28
         elif lane == 2:
             old_row = self.mapper[str(vacant)]
             new_row = self.mapper[str(self.lane2_lead_peg)]
@@ -111,24 +144,20 @@ class Classic(Board):
                 old_col = 31
             else:
                 old_col = 28
-            if self.lane1_lead_peg in range(0,31) or self.lane1_lead_peg in range(61,122):
+            if self.lane2_lead_peg in range(0,31) or self.lane2_lead_peg in range(61,122):
                 new_col = 31
             else:
                 new_col = 28
+
         #update self.display
         self.display[old_row] = self.display[old_row][:old_col] + 'o' + self.display[old_row][old_col + 1:]
         self.display[new_row] = self.display[new_row][:new_col] + '+' + self.display[new_row][new_col + 1:]
-        #self.display[0] = f'        {self.player_one.name}: {self.player_one.lead_peg}   vs   {self.player_two.name}: {self.player_two.lead_peg}\n'
+        self.display[0] = f'{self.player_one.name}: {self.player_one.score}   vs   {self.player_two.name}: {self.player_two.score}\n'
 
 
     def display_board(self):
         for line in self.display:
             print(line)
-
-
-
-
-
 
 
 class Four_Person(Classic):

@@ -1,11 +1,28 @@
+"""Handles hand selection and scoring operations.
+
+Typical Usage Examples:
+
+    h = Hand(args)                  #Constructor
+    h.compute_score()               #Tallies and returns total points scored
+    h.determine_peg_points()        #Tallies and returns points after each peg
+    h.optimize_by_points()          #Computer dicard logic 'intermediate' level
+    h.optimize_statistically()      #Computer dicard logic 'expert' level
+    h.peg_selection()               #Computer peg logic
+"""
+
 import learning
 from itertools import combinations
 
-
-
 class Hand():
+    """Hand supports computer card selection logic and scoring tasks 
 
-    def __init__(self, list_of_cards=None, is_crib=False, turncard=None):
+    Attributes:
+        list_of_cards (list of Card objects): See deck module for Card() class
+        is_crib (bool, optional): Cribs are scored differently. Defaults to False.
+        turncard ([type], optional): Required for compute_score(). Defaults to None.
+    """
+
+    def __init__(self, list_of_cards, is_crib=False, turncard=None):
         self.hand = list_of_cards
         self.turncard = turncard
         self.is_crib = is_crib
@@ -87,7 +104,7 @@ class Hand():
     def points_from_runs(self):
         is_run = False
         ranks = self.ranks.copy()
-        if self.turncard:
+        if self.turncard is not None:
             if self.turncard.rank in ranks:
                 ranks[self.turncard.rank] = ranks[self.turncard.rank] + 1 
             else:
@@ -196,9 +213,9 @@ class Hand():
         return points
 
 
-    def optimize_by_points(self):
+    def optimize_by_points(self, num_discards):
         cards = self.hand.copy()
-        possible_hands = combinations(cards,4)
+        possible_hands = combinations(cards, len(cards)-num_discards)
         best_hand = []
         max_score = 0
         score = 0
@@ -223,7 +240,7 @@ class Hand():
         return best_hand
 
 
-    def peg_selection_lead(self, turncard=None):
+    def peg_selection_lead(self):
         #Check if there is a pair. If so, lead one of the cards in the pair
         for key,value in self.ranks.items():
             if value > 1:
@@ -232,7 +249,7 @@ class Hand():
                         return card
         #Otherwise, match the turncard 
         for card in self.hand:
-            if card.rank == turncard.rank:
+            if card.rank == self.turncard.rank:
                 return card
         #Otherwise, avoid playing fives
         for card in self.hand:
@@ -242,10 +259,10 @@ class Hand():
         return self.hand[0]
 
 
-    def peg_selection(self, stack=[], count=None, turncard=None):
+    def peg_selection(self, stack, count):
         #route to lead-off method if count is zero
         if count == 0:
-            return self.peg_selection_lead(turncard=turncard)
+            return self.peg_selection_lead()
         #check for three or four of a kind
         if len(stack) > 2:
             for key,value in self.ranks.items():
@@ -274,7 +291,7 @@ class Hand():
             if card.value + count < 31:
                 return card
 
-    def determine_peg_points(self, count=None):
+    def determine_peg_points(self, count):
         points = 0
         #points for 15 or 31
         if len(self.hand) > 1:

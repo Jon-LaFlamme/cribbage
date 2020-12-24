@@ -48,7 +48,7 @@ def test_display_hand():
     
 
 def test_discard_computer():
-    difficulty = 'easy'
+    difficulty = 'medium'
     num_discards = 2
     d = deck.Deck()
     d.shuffle()
@@ -152,7 +152,7 @@ if __name__ == "__main__":
     #test_discard_computer()    #Test1: 'easy', Test2: 'medium'  Test3: 'hard' PASSED 12/22/20  TODO(Jon) (Optimized Statistically Needs Tuning)
     #test_discard_human()   #PASSED 12/22/20
     #test_cut_deck()     #Test1: Computer random cut, Test1: Human chosen cut, PASSED 12/22/20
-    test_peg_one_computer()
+    #test_peg_one_computer()
     #test_peg_one_human()       
 
 

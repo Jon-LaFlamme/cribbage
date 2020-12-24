@@ -1,6 +1,5 @@
 import deck as d
 
-#Test1 52-card Deck constructor validation
 def test_deck_constructor():   
 
     print("\n---------  TEST Deck Constructor -------------\n")
@@ -10,7 +9,6 @@ def test_deck_constructor():
         print(f'- {card.name}')
 
 
-#Test2 Card property validation
 def test_card_properties():    
 
     print("\n---------  TEST Card Properties -------------\n")
@@ -19,7 +17,6 @@ def test_card_properties():
         print(f'- Card name: {str(card.name)},   Card value: {str(card.value)},   Card rank: {str(card.rank)}')
 
 
-#test3 Deck.peek() validation @param is an integer representing a valid index
 def test_deck_peek():
 
     print("\n---------  TEST Deck Shuffle -------------\n")
@@ -31,7 +28,6 @@ def test_deck_peek():
     print(f'---Peek deck at index 52: {deck.peek(52).name}.')
 
 
-#test4 Deck.cut()
 def test_deck_cut():
 
     print("\n---------  TEST Deck Cut -------------\n")
@@ -43,7 +39,7 @@ def test_deck_cut():
         print(f'- {i}) {card.name}')
 
     #typical case (index 25):
-    deck.cut(index=26)
+    deck.cut(26)
     i = 0
     print(f'\n--- Deck cut at index 26 \n')
     i = 0
@@ -52,7 +48,7 @@ def test_deck_cut():
         print(f'- {i}) {card.name}')
 
     #edge case 1 (index 0):
-    deck.cut(index=0)
+    deck.cut(0)
     i = 0
     print(f'\n--- Deck cut at index 0 \n')
     for card in deck.deck:
@@ -60,7 +56,7 @@ def test_deck_cut():
         print(f'- {i}) {card.name}')
 
     #edge case 2 (index 51):
-    deck.cut(index=51)
+    deck.cut(51)
     i = 0
     print(f'\n--- Deck cut at index 51 \n')
     for card in deck.deck:
@@ -68,7 +64,7 @@ def test_deck_cut():
         print(f'- {i}) {card.name}')
 
     #Invalid case (index 52):
-    deck.cut(index=52)
+    deck.cut(52)
     i = 0
     print(f'\n--- Deck cut at indext 52 \n')
     for card in deck.deck:
@@ -76,8 +72,6 @@ def test_deck_cut():
         print(f'- {i}) {card.name}')
     
 
-#test5 deck.shuffle() method, dependency on deck.cut() method
-#Expectation: deck should be appear sufficiently randomized with minimal clustering
 def test_deck_shuffle():            
     print("\n---------  TEST Deck Shuffle -------------\n")
     deck = d.Deck()                  
@@ -94,13 +88,12 @@ def test_deck_shuffle():
         print(f'{i}) {card.name}')
 
 
-#test6 deck.deal_one() method
 def test_deck_deal_one():
     print("\n---------  TEST Deck Deal One  -------------\n")
     deck = d.Deck()
     for i in range(len(deck.deck)):
         print(f'Card Dealt: {deck.deal_one().name}')
-    #testing exception
+    #testing exception/error handling
     deck.deal_one()
 
 
