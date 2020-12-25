@@ -84,7 +84,12 @@ def hand_id(cards):
     for card in cards:
         ids[f'{card.name[:2]}{card.suit[0]}'] = id_ranks[f'{card.name[:2]}{card.suit[0]}']
     ordered_hand_id = sorted(ids.items(), key=lambda x: x[1], reverse=True) 
-    return f'{ordered_hand_id[0][0][:2]}{ordered_hand_id[1][0][:2]}{ordered_hand_id[2][0][:2]}{ordered_hand_id[3][0][:2]}{signature}'
+    if signature == '4s':
+        return f'{ordered_hand_id[0][0][:2]}{ordered_hand_id[1][0][:2]}{ordered_hand_id[2][0][:2]}{ordered_hand_id[3][0][:2]}*'
+    else:
+        return f'{ordered_hand_id[0][0][:2]}{ordered_hand_id[1][0][:2]}{ordered_hand_id[2][0][:2]}{ordered_hand_id[3][0][:2]}'
+    #return f'{ordered_hand_id[0][0][:2]}{ordered_hand_id[1][0][:2]}{ordered_hand_id[2][0][:2]}{ordered_hand_id[3][0][:2]}{signature}'
+    #too many possibilities. To condense possibilities, created an asterisk signature for 4 suits of the same hand, otherwise no suit signature included.
 
 
 #strategy is one of maximization of points and is blind to other bot's cards with zero statistical adjustments
@@ -246,6 +251,8 @@ def learning_by_hands(intelligent=True):
             p1.cards.append(d.deal_one())
             p2.cards.append(d.deal_one())
             crib.append(d.deal_one())
+            p1_discards = crib[0:2]
+            p2_discards = crib[2:4]
     else:
         p1_dealt_hand = []
         p2_dealt_hand = []
@@ -313,15 +320,15 @@ def learning_by_hands(intelligent=True):
                 """
 
         #Main driver block: peg sequence updates player scores; scores stored before updated again in show_sequence 
-        peg_sequence(is_dealer_p1, turncard, p1, p2)
-        p1_peg = p1.score
-        p2_peg = p2.score  
-        show_sequence(turncard, p1, p2)
-        crib_pts = crib_sequence(turncard, crib)
-        #Memorize the results, check for occasionally memory corruption
-        if len(p1.cards) == 4 and len(p2.cards) == 4:
-            memorize_results(p1, p2, p1_peg, p2_peg, is_dealer_p1)
-            memorize_discards(p1_discards, p2_discards, crib_pts, is_dealer_p1)
+    peg_sequence(is_dealer_p1, turncard, p1, p2)
+    p1_peg = p1.score
+    p2_peg = p2.score  
+    show_sequence(turncard, p1, p2)
+    crib_pts = crib_sequence(turncard, crib)
+    #Memorize the results, check for occasionally memory corruption
+    if len(p1.cards) == 4 and len(p2.cards) == 4:
+        memorize_results(p1, p2, p1_peg, p2_peg, is_dealer_p1)
+        memorize_discards(p1_discards, p2_discards, crib_pts, is_dealer_p1)
 
 
 if __name__ == "__main__":
@@ -333,7 +340,7 @@ if __name__ == "__main__":
         discard_outcomes = json.load(f)
 
     for i in range(500000):
-        learning_by_hands(intelligent=True)
+        learning_by_hands(intelligent=False)
         if i%1000 == 0:
             print(f'{i} rounds completed.')
 

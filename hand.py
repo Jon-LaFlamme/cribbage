@@ -245,7 +245,10 @@ class Hand():
             discard_id = learning.discard_signature(discards)
             hand_id = learning.hand_id(hand)
             discard_stats = discard_outcomes[discard_id]
-            hand_stats = performance_by_hand[hand_id]
+            if hand_id in performance_by_hand:
+                hand_stats = performance_by_hand[hand_id]
+            else:
+                hand_stats = performance_by_hand[hand_id[:-1]]
 
             if is_dealer:
                 avg_hand = hand_stats['hand_pts'] / (hand_stats['times_nodeal'] + hand_stats['times_dealer'])
