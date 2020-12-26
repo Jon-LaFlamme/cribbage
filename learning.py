@@ -84,9 +84,9 @@ def hand_id(cards):
     for card in cards:
         ids[f'{card.name[:2]}{card.suit[0]}'] = id_ranks[f'{card.name[:2]}{card.suit[0]}']
     ordered_hand_id = sorted(ids.items(), key=lambda x: x[1], reverse=True) 
-    if signature == '4s':
+    if len(ordered_hand_id) == 4 and signature == '4s':
         return f'{ordered_hand_id[0][0][:2]}{ordered_hand_id[1][0][:2]}{ordered_hand_id[2][0][:2]}{ordered_hand_id[3][0][:2]}*'
-    else:
+    elif len(ordered_hand_id) == 4:
         return f'{ordered_hand_id[0][0][:2]}{ordered_hand_id[1][0][:2]}{ordered_hand_id[2][0][:2]}{ordered_hand_id[3][0][:2]}'
     #return f'{ordered_hand_id[0][0][:2]}{ordered_hand_id[1][0][:2]}{ordered_hand_id[2][0][:2]}{ordered_hand_id[3][0][:2]}{signature}'
     #too many possibilities. To condense possibilities, created an asterisk signature for 4 suits of the same hand, otherwise no suit signature included.
@@ -233,7 +233,7 @@ def memorize_discards(h1_disc, h2_disc, crib_pts, is_dealer_p1):
     discard_outcomes[h2]['times_discarded'] += 1
     discard_outcomes[h2]['crib_points'] += crib_pts
 
-def learning_by_hands(intelligent=True):
+def learning_by_hands(intelligent=True, alternate=True):
     #Function initializations: setup players, deck, turncard, local variables, determine dealer
     p1 = players.Computer(difficulty="medium")
     p2 = players.Computer(difficulty="medium")
@@ -241,8 +241,9 @@ def learning_by_hands(intelligent=True):
     d.shuffle()
     crib = []
     turncard = d.deal_one()
-    is_dealer_p1 = True
-    if random.randint(0,9) & 1  == 1:
+    if alternate:
+        is_dealer_p1 = True
+    else:
         is_dealer_p1 = False
 
     #Allows learning Function to focus either on random configurations or heuristically influenced configurations 
@@ -263,7 +264,7 @@ def learning_by_hands(intelligent=True):
         h2 = hand.Hand(p2_dealt_hand)
         #For heuristically influenced hand selection
         h1_selects = h1.optimize_by_points(2)
-        h2_selects = h2.optimize_by_points(2)
+        h2_selects = h2.optimize_statistically(2)
         p1.cards = list(h1_selects)
         p2.cards = list(h2_selects)
         p1_discards = []
@@ -325,10 +326,15 @@ def learning_by_hands(intelligent=True):
     p2_peg = p2.score  
     show_sequence(turncard, p1, p2)
     crib_pts = crib_sequence(turncard, crib)
+    if is_dealer_p1:
+        p1.score += crib_pts
+    else:
+        p2.score += crib_pts
     #Memorize the results, check for occasionally memory corruption
-    if len(p1.cards) == 4 and len(p2.cards) == 4:
-        memorize_results(p1, p2, p1_peg, p2_peg, is_dealer_p1)
-        memorize_discards(p1_discards, p2_discards, crib_pts, is_dealer_p1)
+    #if len(p1.cards) == 4 and len(p2.cards) == 4:
+        #memorize_results(p1, p2, p1_peg, p2_peg, is_dealer_p1)
+        #memorize_discards(p1_discards, p2_discards, crib_pts, is_dealer_p1)
+    return [p1.score , p2.score]
 
 
 if __name__ == "__main__":
@@ -339,11 +345,35 @@ if __name__ == "__main__":
     with open('discards.json','r') as f:
         discard_outcomes = json.load(f)
 
-    for i in range(500000):
-        learning_by_hands(intelligent=False)
-        if i%1000 == 0:
-            print(f'{i} rounds completed.')
+    p1_score = 0
+    p2_score = 0
+    p1_wins = 0
+    p2_wins = 0
 
+    for i in range(100001):
+        if i % 2 == 0:
+            vec = learning_by_hands(intelligent=True, alternate=False)
+        else:
+            vec = learning_by_hands(intelligent=True, alternate=True)
+        
+        p1_score += vec[0]
+        p2_score += vec[1]
+        if p1_score >= 121 or p2_score >= 121:
+            if p1_score > p2_score:
+                p1_wins += 1
+            else:
+                p2_wins += 1
+            p1_score = 0
+            p2_score = 0
+
+
+        if i%10000 == 0 :
+            print(f'{i} rounds completed.')
+            #print(f'player1 {p1_score}  player2 {p2_score}')
+
+    print(f'player1 wins {p1_wins}  player2 wins {p2_wins}')
+
+    '''
     print(f' length of peformance by hand: {len(performance_by_hand)}')
     print(f' length of discard outcomes: {len(discard_outcomes)}')
 
@@ -352,7 +382,7 @@ if __name__ == "__main__":
 
     with open('discards.json', 'w') as f:
         json.dump(discard_outcomes, f)
-
+    '''
 
 
 

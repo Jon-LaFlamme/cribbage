@@ -163,7 +163,8 @@ class Computer(Player):
             for card in self.cards:
                 if card not in selects:
                     discards.append(card)
-                    self.cards.remove(card)
+            for card in discards:
+                self.cards.remove(card)
         return discards
 
    

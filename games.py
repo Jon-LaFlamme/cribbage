@@ -209,7 +209,7 @@ class Cribbage():
             if self.game_not_over:
                 self.player_two.score += cr_pts
                 verbose.show_hand(self.player_two, self.turncard, cr_pts, hand=self.crib)
-                verbose.post_score(self.player_two, self.player_two)
+                verbose.post_score(self.player_one, self.player_two)
                 self.update_board()
                 self.board.display_board()
 
@@ -223,6 +223,8 @@ class Cribbage():
         self.player_one.cards = []
         self.player_two.cards = []
         self.crib = []
+        if len(self.deck.deck) != 52:
+            self.deck = deck.Deck()
         self.deck.shuffle()
 
         

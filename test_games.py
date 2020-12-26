@@ -98,10 +98,6 @@ def test_game_driver():
     g.game_driver()
     
 
-
-
-
-
 if __name__ == "__main__":
     #test_determine_dealer_sequence()        #PASSED 12/23/20
     #test_deal_sequence()           #PASSED 12/23/20
@@ -109,4 +105,5 @@ if __name__ == "__main__":
     #test_turncard_sequence()        #PASSED 12/23/20
     #test_peg_sequence()            #PASSED 12/23/20
     #test_show_sequence()           #PASSED 12/23/20
-    test_game_driver()
+    #test_game_driver()
+
