@@ -76,18 +76,19 @@ class Human(Player):
             else:
                 print('Invalid selection. Please try again.')
         if for_first_deal:
-            return deck.pop(index)
+            return deck.deck.pop(index)
         else:
             deck.cut(index)
 
-    def discard(self, num_discards=None):
+    def discard(self, num_discards=2):
         discards = []
         indices= []
         while len(discards) < num_discards:     #supports 2 and 3-4 player discard rules with num_discards parameter
             invalid = True
+            self.display_hand(is_numbered=True)
             while invalid:
                 index = int(input('Make your discard selection: ')) - 1
-                if index in range(0,len(self.cards)-1) and index not in indices:
+                if index in range(0,len(self.cards)) and index not in indices:
                     invalid = False
                     indices.append(index)
                     discards.append(self.cards[index])
@@ -95,14 +96,19 @@ class Human(Player):
                     print('Index Error: Please select a valid index.')
         for card in discards:
             self.cards.remove(card)
+        print(f'-------------{self.name}\'s hand ------------' )
+        self.display_hand()
+        print(f'-------------{self.name}\'s discards ------------' )
+        for card in discards:
+            print(card.name)
         return discards
 
-    def peg_one(self, count=None):
+    def peg_one(self, stack=[], count=None, turncard=None):
         invalid = True
         while invalid:
             self.display_hand(is_numbered=True)
-            index = int(input(f'Select a card to peg {len(self.cards)}')) - 1
-            if index in range(0, len(self.cards)) and self.cards[index] + count <= 31:
+            index = int(input(f'Select a card to peg:')) - 1
+            if index in range(0, len(self.cards)) and self.cards[index].value + count <= 31:
                 return self.cards[index]
             else:
                 print('Invalid selection. Please try again.')

@@ -264,7 +264,7 @@ def learning_by_hands(intelligent=True, alternate=True):
         h2 = hand.Hand(p2_dealt_hand)
         #For heuristically influenced hand selection
         h1_selects = h1.optimize_by_points(2)
-        h2_selects = h2.optimize_statistically(2)
+        h2_selects = h2.optimize_by_points(2)
         p1.cards = list(h1_selects)
         p2.cards = list(h2_selects)
         p1_discards = []

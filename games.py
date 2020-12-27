@@ -57,6 +57,7 @@ class Cribbage():
 
 
     def deal_sequence(self):
+        verbose.continue_prompt()
         if self.player_one.is_dealer:
             verbose.dealing(self.player_one)
             for i in range(6):
@@ -101,6 +102,7 @@ class Cribbage():
 
     def peg_sequence(self):
         verbose.pegging()
+        verbose.continue_prompt()
         #temporary copy to restore player.cards to original state after peg_sequence() is complete
         hand1 = self.player_one.cards.copy()
         hand2 = self.player_two.cards.copy()
@@ -112,7 +114,7 @@ class Cribbage():
         while self.game_not_over and (self.player_one.cards or self.player_two.cards):
             self.peg_count = 0
             stack = hand.Hand([], turncard=self.turncard)
-            while (self.game_not_over and self.peg_count <= 31) and (self.player_one.can_peg(self.peg_count) or self.player_two.can_peg(self.peg_count)):
+            while (self.game_not_over and self.peg_count < 31) and (self.player_one.can_peg(self.peg_count) or self.player_two.can_peg(self.peg_count)):
                 if is_p1_turn and self.player_one.can_peg(self.peg_count):
                     selected = self.player_one.peg_one(stack.hand, self.peg_count, self.turncard)
                     self.player_one.cards.remove(selected)
@@ -176,6 +178,7 @@ class Cribbage():
         h2_pts = h2.compute_score()
         cr_pts = cr.compute_score()
 
+        verbose.continue_prompt()
         if self.player_one.is_dealer:
             self.player_two.score +=  h2_pts
             verbose.show_hand(self.player_two, self.turncard, h2_pts)
@@ -183,12 +186,14 @@ class Cribbage():
             self.update_board()
             self.board.display_board()
             if self.game_not_over:
+                verbose.continue_prompt()
                 self.player_one.score += h1_pts
                 verbose.show_hand(self.player_one, self.turncard, h1_pts)
                 verbose.post_score(self.player_one, self.player_two)
                 self.update_board()
                 self.board.display_board()
             if self.game_not_over:
+                verbose.continue_prompt()
                 self.player_one.score += cr_pts
                 verbose.show_hand(self.player_one, self.turncard, cr_pts, hand=self.crib)
                 verbose.post_score(self.player_one, self.player_two)
@@ -201,12 +206,14 @@ class Cribbage():
             self.update_board()
             self.board.display_board()
             if self.game_not_over:
+                verbose.continue_prompt()
                 self.player_two.score +=  h2_pts
                 verbose.show_hand(self.player_two, self.turncard, h2_pts)
                 verbose.post_score(self.player_one, self.player_two)
                 self.update_board()
                 self.board.display_board()
             if self.game_not_over:
+                verbose.continue_prompt()
                 self.player_two.score += cr_pts
                 verbose.show_hand(self.player_two, self.turncard, cr_pts, hand=self.crib)
                 verbose.post_score(self.player_one, self.player_two)
@@ -226,7 +233,12 @@ class Cribbage():
         if len(self.deck.deck) != 52:
             self.deck = deck.Deck()
         self.deck.shuffle()
-
+        if self.player_one.is_dealer:
+            self.player_one.is_dealer = False
+            self.player_two.is_dealer = True
+        else:
+            self.player_one.is_dealer = True
+            self.player_two.is_dealer = False
         
 
     def end_sequence(self):

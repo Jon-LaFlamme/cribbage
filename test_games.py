@@ -97,6 +97,13 @@ def test_game_driver():
     g = games.Cribbage(p1,p2)
     g.game_driver()
     
+def test_match_human():
+    #human vs computer
+    u = users.sign_in()
+    p1 = players.Human(user=u)
+    p2 = players.Computer(difficulty='hard')
+    g = games.Cribbage(p1,p2)
+    g.game_driver()
 
 if __name__ == "__main__":
     #test_determine_dealer_sequence()        #PASSED 12/23/20
@@ -106,4 +113,4 @@ if __name__ == "__main__":
     #test_peg_sequence()            #PASSED 12/23/20
     #test_show_sequence()           #PASSED 12/23/20
     #test_game_driver()
-
+    test_match_human()

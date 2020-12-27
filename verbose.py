@@ -12,6 +12,9 @@ def post_score(player1, player2):
         player2.score = 121
     print(f'\n~~~~~~~  {player1.name}: {player1.score}  ~~~~~~~~~~~~  {player2.name}: {player2.score}  ~~~~~~~\n')
 
+def continue_prompt():
+    input('========= Press any key to continue:')
+
 #Newgame and First Deal sequence
 def start_game(player1, player2):
     print('\n\n=============== NEW GAME ===============\n')
