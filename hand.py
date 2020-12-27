@@ -354,11 +354,14 @@ class Hand():
                 points += max_run_points
             #check for pairs
             if self.hand[-1].rank == self.hand[-2].rank:
-                points += 2
                 if len(self.hand) > 2 and self.hand[-2].rank == self.hand[-3].rank:
-                    points += 6
                     if len(self.hand) > 3 and self.hand[-3].rank == self.hand[-4].rank:
                         points += 12   
+                    else:
+                        points += 6
+                else:
+                    points += 2
+                
         return points
 
                         
