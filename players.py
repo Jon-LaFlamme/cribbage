@@ -70,7 +70,9 @@ class Human(Player):
     def cut_deck(self, deck=None, for_first_deal=False):
         invalid = True
         while invalid:
-            index = int(input(f'Select a number between 1 and {len(deck.deck)} to cut the deck: ')) - 1
+            index = input(f'Select a number between 1 and {len(deck.deck)} to cut the deck: ')
+            if index != '':
+                index = int(index) - 1
             if index in range(0,len(deck.deck)):
                 invalid = False    
             else:
@@ -87,7 +89,9 @@ class Human(Player):
             invalid = True
             self.display_hand(is_numbered=True)
             while invalid:
-                index = int(input('Make your discard selection: ')) - 1
+                index = input('Make your discard selection: ')
+                if index != '':
+                    index = int(index) - 1
                 if index in range(0,len(self.cards)) and index not in indices:
                     invalid = False
                     indices.append(index)
@@ -107,7 +111,9 @@ class Human(Player):
         invalid = True
         while invalid:
             self.display_hand(is_numbered=True)
-            index = int(input(f'Select a card to peg:')) - 1
+            index = input(f'Select a card to peg:')
+            if index != '':
+                index = int(index) - 1
             if index in range(0, len(self.cards)) and self.cards[index].value + count <= 31:
                 return self.cards[index]
             else:

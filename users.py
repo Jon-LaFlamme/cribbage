@@ -42,8 +42,8 @@ def sign_in():
         selection = int(input('Make a selection: '))
         if selection == 1:
             while invalid:
-                username = input('\nEnter your username: ')
-                email = input('Enter your email: ')
+                username = input('\nEnter your username: ').lower()
+                email = input('Enter your email: ').lower()
                 feedback = lookup_user(username=username, email=email)
                 if feedback == 'fna':
                     print('email does not match username.')
@@ -56,8 +56,8 @@ def sign_in():
                     return u
         elif selection == 2:
             while invalid:
-                username = input('\nCreate a username: ')
-                email = input('Enter your email: ')
+                username = input('\nCreate a username: ').lower()
+                email = input('Enter your email: ').lower()
                 feedback = lookup_user(username=username, email=email)
                 if feedback == 'nf':
                     add_user(username=username, email=email)

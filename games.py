@@ -113,7 +113,7 @@ class Cribbage():
         
         while self.game_not_over and (self.player_one.cards or self.player_two.cards):
             self.peg_count = 0
-            stack = hand.Hand([], turncard=self.turncard)
+            stack = hand.Hand([])
             while (self.game_not_over and self.peg_count < 31) and (self.player_one.can_peg(self.peg_count) or self.player_two.can_peg(self.peg_count)):
                 if is_p1_turn and self.player_one.can_peg(self.peg_count):
                     selected = self.player_one.peg_one(stack.hand, self.peg_count, self.turncard)
@@ -149,7 +149,7 @@ class Cribbage():
                         break
                     p1_played_last = False
                     is_p1_turn = True
-                else:
+                elif self.player_one.can_peg(self.peg_count):
                     is_p1_turn = True
             if self.peg_count < 31:
                 if p1_played_last:
@@ -246,23 +246,23 @@ class Cribbage():
         if self.player_one.score >= 121:
             print(f'{self.player_one.name} wins!')
             if isinstance(self.player_one, players.Human):
-                self.player_one.user.game_stats['win'] += 1
+                self.player_one.user.match_stats['win'] += 1
                 if self.player_two.score < 61:
-                    self.player_one.user.game_stats['dbl_skunked_opponent'] += 1
-                    self.player_two.user.game_stats['was_dbl_skunked'] += 1
+                    self.player_one.user.match_stats['dbl_skunked_opponent'] += 1
+                    self.player_two.user.match_stats['was_dbl_skunked'] += 1
                 elif self.player_two.score < 91:
-                    self.player_one.user.game_stats['skunked_opponent'] += 1
-                    self.player_two.user.game_stats['was_skunked'] += 1
+                    self.player_one.user.match_stats['skunked_opponent'] += 1
+                    self.player_two.user.maatch_stats['was_skunked'] += 1
         else:
             print(f'{self.player_two.name} wins!')
             if isinstance(self.player_two, players.Human):
-                self.player_two.user.game_stats['win'] += 1
+                self.player_two.user.match_stats['win'] += 1
                 if self.player_one.score < 61:
-                    self.player_two.user.game_stats['dbl_skunked_opponent'] += 1
-                    self.player_one.user.game_stats['was_dbl_skunked'] += 1
+                    self.player_two.user.match_stats['dbl_skunked_opponent'] += 1
+                    self.player_one.user.match_stats['was_dbl_skunked'] += 1
                 elif self.player_one.score < 91:
-                    self.player_two.user.game_stats['skunked_opponent'] += 1
-                    self.player_one.user.game_stats['was_skunked'] += 1
+                    self.player_two.user.match_stats['skunked_opponent'] += 1
+                    self.player_one.user.match_stats['was_skunked'] += 1
         #update user stats
         if isinstance(self.player_one, players.Human):
             self.player_one.user.update_profile()
